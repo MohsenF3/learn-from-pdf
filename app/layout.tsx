@@ -1,5 +1,6 @@
 import { LayoutWrapper } from "@/features/shared/components/layout-wrapper";
 import { Providers } from "@/features/shared/providers";
+import { cormorant, firaSansCondensed, geistMono } from "@/lib/fonts";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -15,7 +16,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={` antialiased`}>
+      <body
+        className={`${firaSansCondensed.variable} ${geistMono.variable} ${cormorant.variable}`}
+      >
         <Providers>
           <LayoutWrapper>{children}</LayoutWrapper>
         </Providers>
