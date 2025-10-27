@@ -1,4 +1,5 @@
 import { LayoutWrapper } from "@/features/shared/components/layout-wrapper";
+import { Providers } from "@/features/shared/providers";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -13,9 +14,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className={` antialiased`}>
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <Providers>
+          <LayoutWrapper>{children}</LayoutWrapper>
+        </Providers>
       </body>
     </html>
   );
