@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -21,7 +22,7 @@ export function HeroSection() {
         and lifelong learners who want to master their material.
       </p>
       <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <Link href="/upload">
+        <Link href={ROUTES.PUBLIC.UPLOAD}>
           <Button
             size="lg"
             className="h-12 px-8 text-base shadow-lg shadow-primary/25"
@@ -30,7 +31,7 @@ export function HeroSection() {
             <Sparkles className="ml-2 h-5 w-5" />
           </Button>
         </Link>
-        <Link href="/upload">
+        <Link href={ROUTES.PUBLIC.UPLOAD}>
           <Button
             size="lg"
             variant="outline"

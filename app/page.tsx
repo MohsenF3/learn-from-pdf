@@ -3,6 +3,11 @@ import { BlobBackground } from "@/features/home/components/blob-background";
 import { CtaSection } from "@/features/home/components/cta-section";
 import { FeaturesCards } from "@/features/home/components/features-cards";
 import { HeroSection } from "@/features/home/components/hero-section";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "LearnfromPDF - Transform PDFs into Interactive Quizzes",
+};
 
 export default function Home() {
   return (

@@ -1,5 +1,6 @@
 import { Logo } from "./logo";
 import ThemeToggle from "./theme-toggle";
+import UserMenu from "./user-menu";
 
 export default function Header() {
   return (
@@ -8,6 +9,7 @@ export default function Header() {
         <Logo />
 
         <div className="flex items-center gap-3">
+          <UserMenu />
           <ThemeToggle />
         </div>
       </div>

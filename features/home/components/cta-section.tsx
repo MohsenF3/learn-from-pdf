@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/lib/routes";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 
@@ -12,7 +13,7 @@ export function CtaSection() {
         Join thousands of learners who are using AI-powered quizzes to master
         their study materials faster and more effectively.
       </p>
-      <Link href="/upload">
+      <Link href={ROUTES.PUBLIC.UPLOAD}>
         <Button
           size="lg"
           className="h-12 px-8 text-base shadow-lg shadow-primary/25"

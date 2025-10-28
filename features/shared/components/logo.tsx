@@ -1,3 +1,4 @@
+import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import React from "react";
@@ -8,7 +9,7 @@ export function LogoIcon({ className, ...props }: React.ComponentProps<"svg">) {
       viewBox="0 0 35 35"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={cn("size-4", className)}
+      className={cn("size-10", className)}
       {...props}
     >
       <circle cx="17.5" cy="17.5" r="17.5" fill="black"></circle>
@@ -32,8 +33,11 @@ export function Logo({
   titleClassName,
 }: LogoProps) {
   return (
-    <Link href="/" className={cn("flex items-center gap-2", linkClassName)}>
-      <div className="rounded-lg bg-primary/10 p-2">
+    <Link
+      href={ROUTES.PUBLIC.HOME}
+      className={cn("flex items-center gap-2", linkClassName)}
+    >
+      <div className="rounded-xl bg-primary/10 p-1">
         <LogoIcon className={iconClassName} />
       </div>
       <h1 className={cn("text-xl font-bold text-foreground", titleClassName)}>

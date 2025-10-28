@@ -5,7 +5,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <Header />
-      <main className="flex-1">{children}</main>
+      <main>{children}</main>
       <Footer />
     </div>
   );
