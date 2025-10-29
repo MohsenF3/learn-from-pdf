@@ -2,14 +2,11 @@
 
 import { ROUTES } from "@/lib/routes";
 import { createClientFromServer } from "@/lib/supabase/server";
+import { ActionResult } from "@/lib/types";
 import { redirect } from "next/navigation";
 import * as z from "zod";
 import { loginSchema, verifyOTPSchema } from "./schemas";
-import type {
-  ActionResult,
-  LoginSchemaType,
-  VerifyOTPSchemaType,
-} from "./types";
+import type { LoginSchemaType, VerifyOTPSchemaType } from "./types";
 
 export async function login(
   input: LoginSchemaType

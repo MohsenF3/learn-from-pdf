@@ -12,9 +12,7 @@ export function HeroSection() {
       </div>
       <h2 className="mb-6 text-balance text-5xl font-bold tracking-tight text-foreground md:text-7xl">
         Transform Your PDFs into
-        <span className="block bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
-          Interactive Quizzes
-        </span>
+        <span className="block gradient-text">Interactive Quizzes</span>
       </h2>
       <p className="mx-auto mb-10 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">
         Upload any PDF document and let our advanced AI generate personalized
