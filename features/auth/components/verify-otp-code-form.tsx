@@ -64,7 +64,7 @@ export default function VerifyOTPForm({ email }: VerifyOTPFormProps) {
       }
 
       toast.success("Email verified successfully!");
-      router.replace(ROUTES.PROTECTED.PROFILE);
+      router.replace(ROUTES.PUBLIC.HOME);
     });
   };
 

@@ -9,11 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { getUser } from "@/features/auth/lib/getUser";
+import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { History } from "lucide-react";
 import Link from "next/link";
 import LogoutButton from "./logout-button";
-import { ROUTES } from "@/lib/routes";
 
 export default async function UserMenu() {
   const user = await getUser();
@@ -55,13 +55,7 @@ export default async function UserMenu() {
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href={ROUTES.PROTECTED.PROFILE} className="cursor-pointer">
-            <History className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </Link>
-        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link href={ROUTES.PROTECTED.HISTORY} className="cursor-pointer">

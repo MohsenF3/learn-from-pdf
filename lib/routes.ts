@@ -13,7 +13,6 @@ export const ROUTES = {
 
   // Protected (require login)
   PROTECTED: {
-    PROFILE: "/profile",
     HISTORY: "/history",
   },
 } as const;
