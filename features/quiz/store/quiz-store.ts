@@ -7,13 +7,12 @@ import { DEMO_QUIZ_QUESTIONS } from "../lib/config";
 interface QuizState {
   questions: QuizQuestion[];
   config: QuizConfig | null;
-
   currentQuestion: number;
   selectedAnswers: (number | null)[];
   currentAnswer: number | null;
-
   score: number | null;
   isComplete: boolean;
+  hasCelebrated: boolean;
 }
 
 interface QuizActions {
@@ -24,6 +23,7 @@ interface QuizActions {
   previousQuestion: () => void;
   resetQuiz: () => void;
   loadTestData: () => void;
+  setCelebrated: () => void;
 }
 
 type QuizStore = QuizState & QuizActions;
@@ -36,6 +36,7 @@ const initialQuizState: QuizState = {
   currentAnswer: null,
   score: null,
   isComplete: false,
+  hasCelebrated: false,
 };
 
 export const useQuizStore = create<QuizStore>()(
@@ -43,7 +44,6 @@ export const useQuizStore = create<QuizStore>()(
     persist(
       (set, get) => ({
         ...initialQuizState,
-
         setQuestions: (questions) =>
           set(
             produce((draft: QuizState) => {
@@ -53,22 +53,18 @@ export const useQuizStore = create<QuizStore>()(
               draft.currentAnswer = null;
               draft.score = null;
               draft.isComplete = false;
+              draft.hasCelebrated = false;
             })
           ),
-
         setConfig: (config) => set({ config }),
-
         selectAnswer: (answer) => set({ currentAnswer: answer }),
-
         nextQuestion: () =>
           set(
             produce((draft: QuizState) => {
               const { currentAnswer, currentQuestion, questions } = get();
               if (!questions.length) return;
-
               if (currentAnswer !== null)
                 draft.selectedAnswers[currentQuestion] = currentAnswer;
-
               if (currentQuestion < questions.length - 1) {
                 draft.currentQuestion += 1;
                 draft.currentAnswer =
@@ -82,28 +78,22 @@ export const useQuizStore = create<QuizStore>()(
               }
             })
           ),
-
         previousQuestion: () =>
           set(
             produce((draft: QuizState) => {
               const { currentAnswer, currentQuestion, selectedAnswers } = get();
               if (currentQuestion === 0) return;
-
               if (currentAnswer !== null)
                 draft.selectedAnswers[currentQuestion] = currentAnswer;
-
               draft.currentQuestion -= 1;
               draft.currentAnswer =
                 selectedAnswers[draft.currentQuestion] ?? null;
             })
           ),
-
         resetQuiz: () => {
           localStorage.removeItem("quiz-storage");
-
           set(initialQuizState, false, "resetQuiz");
         },
-
         loadTestData: () =>
           set(
             produce((draft: QuizState) => {
@@ -115,8 +105,10 @@ export const useQuizStore = create<QuizStore>()(
               draft.currentAnswer = null;
               draft.score = null;
               draft.isComplete = false;
+              draft.hasCelebrated = false;
             })
           ),
+        setCelebrated: () => set({ hasCelebrated: true }),
       }),
       {
         name: "quiz-storage",
@@ -128,6 +120,7 @@ export const useQuizStore = create<QuizStore>()(
           currentAnswer: state.currentAnswer,
           score: state.score,
           isComplete: state.isComplete,
+          hasCelebrated: state.hasCelebrated,
         }),
       }
     )

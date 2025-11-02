@@ -1,5 +1,3 @@
-"use client";
-
 import confetti from "canvas-confetti";
 import { useCallback } from "react";
 
@@ -15,10 +13,9 @@ export function useConfetti() {
         angle: 60,
         spread: 50 + Math.random() * 10,
         origin: { x: 0 },
-        colors: ["#4ade80", "#22c55e", "#86efac"], // Green palette
+        colors: ["#4ade80", "#22c55e", "#86efac"],
       });
 
-      // Right side burst
       confetti({
         particleCount: 2 + Math.random() * 2,
         angle: 120,

@@ -21,27 +21,27 @@ interface ShowScoreProps {
 }
 
 export default function QuizResult({ user }: ShowScoreProps) {
-  const hasCelebrated = React.useRef(false);
-
   const { fireworks } = useConfetti();
 
-  const { questions, score } = useQuizStore(
+  const { questions, score, hasCelebrated } = useQuizStore(
     useShallow((s) => ({
       questions: s.questions,
       score: s.score,
+      hasCelebrated: s.hasCelebrated,
     }))
   );
+  const setCelebrated = useQuizStore((s) => s.setCelebrated);
 
   const total = questions.length;
   const percentage = total > 0 ? (score! / total) * 100 : 0;
   const { emoji, message, colorClass } = getScoreInfo(percentage);
 
   React.useEffect(() => {
-    if (hasCelebrated.current || total === 0 || percentage < 80) return;
+    if (hasCelebrated || total === 0 || percentage < 80) return;
 
     fireworks();
-    hasCelebrated.current = true;
-  }, [fireworks, percentage, total, stop]);
+    setCelebrated();
+  }, [fireworks, percentage, total, hasCelebrated, setCelebrated]);
 
   return (
     <main className="min-h-screen bg-background">

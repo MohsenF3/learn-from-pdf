@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 export interface QuizResultSummaryProps {
   score: number | null;
   total: number;
@@ -13,7 +15,7 @@ export default function QuizResultSummary({
 }: QuizResultSummaryProps) {
   return (
     <div>
-      <div className={`text-7xl font-bold ${colorClass}`}>
+      <div className={cn("text-7xl font-bold", colorClass)}>
         {score}/{total}
       </div>
       <p className="mt-2 text-xl text-muted-foreground">
