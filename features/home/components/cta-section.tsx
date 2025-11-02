@@ -13,7 +13,7 @@ export function CtaSection() {
         Join thousands of learners who are using AI-powered quizzes to master
         their study materials faster and more effectively.
       </p>
-      <Link href={ROUTES.PUBLIC.UPLOAD}>
+      <Link href={ROUTES.PUBLIC.QUIZ_CREATE}>
         <Button
           size="lg"
           className="h-12 px-8 text-base shadow-lg shadow-primary/25"

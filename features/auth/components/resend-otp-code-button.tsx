@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { tryCatch } from "@/lib/try-catch";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader, RefreshCw } from "lucide-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { resendOTP } from "../lib/actions";
@@ -44,7 +44,7 @@ export default function ResendOTPCodeButton({
     >
       {isPending ? (
         <>
-          <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
+          <Loader className="mr-1.5 h-3 w-3 animate-spin" />
           Sending…
         </>
       ) : (

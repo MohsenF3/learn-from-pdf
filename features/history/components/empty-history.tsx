@@ -16,7 +16,7 @@ export default function EmptyHistory() {
         </p>
         <Link
           className={cn(buttonVariants({ variant: "default" }))}
-          href={ROUTES.PUBLIC.UPLOAD}
+          href={ROUTES.PUBLIC.QUIZ_CREATE}
         >
           Create your first quiz
         </Link>

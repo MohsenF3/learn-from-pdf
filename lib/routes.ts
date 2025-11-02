@@ -2,7 +2,10 @@ export const ROUTES = {
   // Public
   PUBLIC: {
     HOME: "/",
-    UPLOAD: "/upload",
+    QUIZ_CREATE: "/quiz/create",
+    QUIZ_DEMO: "/quiz/demo",
+    QUIZ_RESULT: "/quiz/result",
+    QUIZ_REVIEW: "/quiz/review",
   },
 
   // Auth flow

@@ -1,7 +1,9 @@
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { ROUTES } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
+import DemoQuizButton from "./demo-quiz-button";
 
 export function HeroSection() {
   return (
@@ -20,24 +22,21 @@ export function HeroSection() {
         and lifelong learners who want to master their material.
       </p>
       <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-        <Link href={ROUTES.PUBLIC.UPLOAD}>
-          <Button
-            size="lg"
-            className="h-12 px-8 text-base shadow-lg shadow-primary/25"
-          >
-            Start Creating Quizzes
-            <Sparkles className="ml-2 h-5 w-5" />
-          </Button>
+        <Link
+          href={ROUTES.PUBLIC.QUIZ_CREATE}
+          className={cn(
+            buttonVariants({
+              variant: "default",
+              size: "lg",
+              className: "h-12 px-8 text-base shadow-lg shadow-primary/25",
+            })
+          )}
+        >
+          Start Creating Quizzes
+          <Sparkles className="ml-2 h-5 w-5" />
         </Link>
-        <Link href={ROUTES.PUBLIC.UPLOAD}>
-          <Button
-            size="lg"
-            variant="outline"
-            className="h-12 px-8 text-base bg-transparent"
-          >
-            Try Demo Quiz
-          </Button>
-        </Link>
+
+        <DemoQuizButton />
       </div>
 
       <div className="mt-16 grid grid-cols-2 gap-8 md:grid-cols-4">
