@@ -4,7 +4,8 @@ export interface QuizQuestion {
   correctAnswer: number;
 }
 
-export type QuizDifficulties = "simple" | "medium" | "hard";
+export const QUIZ_DIFFICULTIES = ["simple", "medium", "hard"] as const;
+export type QuizDifficulties = (typeof QUIZ_DIFFICULTIES)[number];
 
 export interface QuizConfig {
   language: string;

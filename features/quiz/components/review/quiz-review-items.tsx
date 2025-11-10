@@ -2,7 +2,7 @@
 
 import QuestionReviewCard from "@/features/history/components/question-review-card";
 import { useShallow } from "zustand/shallow";
-import { useQuizStore } from "../store/quiz-store";
+import { useQuizStore } from "../../store/quiz-store";
 
 export default function QuizReviewItems() {
   const { questions, selectedAnswers } = useQuizStore(

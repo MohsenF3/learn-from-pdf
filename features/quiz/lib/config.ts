@@ -1,4 +1,4 @@
-import { QuizQuestion } from "@/features/history/lib/types";
+import { QUIZ_DIFFICULTIES, QuizQuestion } from "@/features/history/lib/types";
 
 export const DEMO_QUIZ_QUESTIONS: QuizQuestion[] = [
   {
@@ -37,3 +37,22 @@ export const DEMO_QUIZ_QUESTIONS: QuizQuestion[] = [
     correctAnswer: 3,
   },
 ];
+
+export const QUIZ_CONFIG = {
+  FILE: {
+    MAX_SIZE: 5 * 1024 * 1024,
+    ACCEPTED_TYPES: ["application/pdf"] as const,
+    ACCEPTED_EXTENSIONS: [".pdf"] as const,
+  },
+  QUESTIONS: {
+    MIN: 1,
+    MAX: 15,
+    DEFAULT: 5,
+  },
+  DIFFICULTIES: QUIZ_DIFFICULTIES,
+} as const;
+
+export const DIFFICULTY_OPTIONS = QUIZ_DIFFICULTIES.map((value) => ({
+  value,
+  label: value.charAt(0).toUpperCase() + value.slice(1),
+}));

@@ -5,6 +5,7 @@ import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
 import Link from "next/link";
+import StartNewQuizButton from "../review/start-new-quiz-button";
 
 export interface QuizResultActionsProps {
   user: User | null;
@@ -13,7 +14,6 @@ export interface QuizResultActionsProps {
 export default function QuizResultActions({ user }: QuizResultActionsProps) {
   return (
     <div className="flex flex-col gap-3 pt-4">
-      {/* TODO : change the result   */}
       <Link
         href={ROUTES.PUBLIC.QUIZ_REVIEW}
         className={cn(
@@ -29,28 +29,22 @@ export default function QuizResultActions({ user }: QuizResultActionsProps) {
 
       {/* show only for logged in users */}
       {user && (
-        <Link
-          href={ROUTES.PROTECTED.HISTORY}
-          className={buttonVariants({
-            variant: "outline",
-            className: "w-full text-lg bg-transparent",
-            size: "lg",
-          })}
+        <StartNewQuizButton
+          className="w-full text-lg bg-transparent"
+          variant="outline"
+          redirectTo={ROUTES.PROTECTED.HISTORY}
         >
           View Quiz History
-        </Link>
+        </StartNewQuizButton>
       )}
 
-      <Link
-        href={ROUTES.PUBLIC.QUIZ_CREATE}
-        className={buttonVariants({
-          variant: "outline",
-          className: "w-full text-lg bg-transparent",
-          size: "lg",
-        })}
+      <StartNewQuizButton
+        className="w-full text-lg bg-transparent"
+        variant="outline"
+        redirectTo={ROUTES.PUBLIC.QUIZ_CREATE}
       >
         Start New Quiz
-      </Link>
+      </StartNewQuizButton>
     </div>
   );
 }

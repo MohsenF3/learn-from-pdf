@@ -10,9 +10,9 @@ import {
 import { User } from "@supabase/supabase-js";
 import React from "react";
 import { useShallow } from "zustand/shallow";
-import { useConfetti } from "../hooks/use-confetti";
-import { getScoreInfo } from "../lib/utils";
-import { useQuizStore } from "../store/quiz-store";
+import { useConfetti } from "../../hooks/use-confetti";
+import { getScoreInfo } from "../../lib/utils";
+import { useQuizStore } from "../../store/quiz-store";
 import QuizResultActions from "./quiz-result-actions";
 import QuizResultSummary from "./quiz-result-summary";
 

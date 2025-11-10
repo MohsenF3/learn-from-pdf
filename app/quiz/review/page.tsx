@@ -1,7 +1,7 @@
 import { QuizGuard } from "@/features/quiz/components/quiz-guard";
-import QuizReviewHeader from "@/features/quiz/components/quiz-review-header";
-import QuizReviewItems from "@/features/quiz/components/quiz-review-items";
-import StartNewQuizButton from "@/features/quiz/components/start-new-quiz-button";
+import QuizReviewHeader from "@/features/quiz/components/review/quiz-review-header";
+import QuizReviewItems from "@/features/quiz/components/review/quiz-review-items";
+import StartNewQuizButton from "@/features/quiz/components/review/start-new-quiz-button";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default function QuizReviewPage() {
                 Great job completing your quiz! 🚀 Ready to challenge yourself
                 with a new one?
               </p>
-              <StartNewQuizButton />
+              <StartNewQuizButton>Create New Quiz</StartNewQuizButton>
             </div>
           </div>
         </div>
