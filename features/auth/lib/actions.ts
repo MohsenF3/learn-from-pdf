@@ -4,7 +4,6 @@ import { ROUTES } from "@/lib/routes";
 import { createClientFromServer } from "@/lib/supabase/server";
 import { ActionResult } from "@/lib/types";
 import { redirect } from "next/navigation";
-import * as z from "zod";
 import { loginSchema, verifyOTPSchema } from "./schemas";
 import type { LoginSchemaType, VerifyOTPSchemaType } from "./types";
 
@@ -14,11 +13,10 @@ export async function login(
   const parsed = loginSchema.safeParse(input);
 
   if (!parsed.success) {
-    const { fieldErrors } = z.flattenError(parsed.error);
+    const firstError = parsed.error.issues[0]?.message ?? "Invalid input data";
     return {
       success: false,
-      error: fieldErrors.email?.[0] ?? "Invalid email",
-      field: "email",
+      error: firstError,
     };
   }
 
@@ -33,7 +31,6 @@ export async function login(
       return {
         success: false,
         error: "Too many requests. Please wait a minute.",
-        field: "email",
       };
     }
 
@@ -41,14 +38,12 @@ export async function login(
       return {
         success: false,
         error: "Please enter a valid email address.",
-        field: "email",
       };
     }
 
     return {
       success: false,
       error: "Failed to send code. Try again.",
-      field: "email",
     };
   }
 
@@ -61,11 +56,10 @@ export async function verifyOTP(
   const parsed = verifyOTPSchema.safeParse(input);
 
   if (!parsed.success) {
-    const { fieldErrors } = z.flattenError(parsed.error);
+    const firstError = parsed.error.issues[0]?.message ?? "Invalid input data";
     return {
       success: false,
-      error: fieldErrors.code?.[0] ?? "Invalid code",
-      field: "code",
+      error: firstError,
     };
   }
 
@@ -81,14 +75,12 @@ export async function verifyOTP(
       return {
         success: false,
         error: "Invalid or expired code. Try again.",
-        field: "code",
       };
     }
 
     return {
       success: false,
       error: "Verification failed.",
-      field: "code",
     };
   }
 
@@ -97,11 +89,11 @@ export async function verifyOTP(
 
 export async function resendOTP(email: string): Promise<ActionResult> {
   const parsed = loginSchema.shape.email.safeParse(email);
+
   if (!parsed.success) {
     return {
       success: false,
       error: "Invalid email address.",
-      field: "email",
     };
   }
 

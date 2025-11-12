@@ -16,7 +16,6 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { ROUTES } from "@/lib/routes";
-import { tryCatch } from "@/lib/try-catch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { useRouter } from "next/navigation";
@@ -45,21 +44,10 @@ export default function VerifyOTPForm({ email }: VerifyOTPFormProps) {
 
   const onSubmit = (data: VerifyOTPSchemaType) => {
     startTransition(async () => {
-      const [result, error] = await tryCatch(verifyOTP(data));
-
-      if (error) {
-        toast.error("Something went wrong");
-        return;
-      }
+      const result = await verifyOTP(data);
 
       if (!result.success) {
-        if (result.field === "code") {
-          form.setError("code", {
-            message: result.error,
-          });
-        } else {
-          toast.error(result.error);
-        }
+        toast.error(result.error);
         return;
       }
 

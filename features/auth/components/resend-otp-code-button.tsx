@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { tryCatch } from "@/lib/try-catch";
 import { Loader, RefreshCw } from "lucide-react";
 import { useTransition } from "react";
 import { toast } from "sonner";
@@ -18,12 +17,7 @@ export default function ResendOTPCodeButton({
 
   const handleResend = () => {
     startTransition(async () => {
-      const [result, error] = await tryCatch(resendOTP(email));
-
-      if (error) {
-        toast.error("Something went wrong");
-        return;
-      }
+      const result = await resendOTP(email);
 
       if (!result.success) {
         toast.error(result.error);

@@ -15,7 +15,6 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { ROUTES } from "@/lib/routes";
-import { tryCatch } from "@/lib/try-catch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MailIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -39,21 +38,10 @@ export default function LoginForm() {
 
   const handleSendCode = (data: LoginSchemaType) => {
     startTransition(async () => {
-      const [result, error] = await tryCatch(login(data));
-
-      if (error) {
-        toast.error("Something went wrong");
-        return;
-      }
+      const result = await login(data);
 
       if (!result.success) {
-        if (result.field) {
-          form.setError(result.field as keyof LoginSchemaType, {
-            message: result.error,
-          });
-        } else {
-          toast.error(result.error);
-        }
+        toast.error(result.error);
         return;
       }
 

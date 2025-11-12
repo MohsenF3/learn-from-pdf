@@ -74,7 +74,6 @@ export const useQuizStore = create<QuizStore>()(
                   (a, i) => a === questions[i].correctAnswer
                 ).length;
                 draft.isComplete = true;
-                console.log("finished");
               }
             })
           ),
