@@ -13,7 +13,7 @@ export default async function LimitedAccessWarning() {
       <Crown className="h-4 w-4 " />
       <AlertTitle>Free Plan Limitations</AlertTitle>
       <AlertDescription>
-        You're currently limited to 10 questions and simple difficulty.{" "}
+        You're currently limited to 5 questions and simple difficulty.{" "}
         <Link href="/auth/login" className="font-semibold underline">
           Sign in
         </Link>{" "}

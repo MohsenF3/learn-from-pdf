@@ -130,6 +130,7 @@ export const FormInput: FormControlFunc<InputProps> = ({
   autoComplete,
   type,
   className,
+  disabled,
   ...props
 }) => {
   return (
@@ -141,6 +142,7 @@ export const FormInput: FormControlFunc<InputProps> = ({
           autoComplete={autoComplete}
           type={type}
           className={className}
+          disabled={disabled}
         />
       )}
     </FormBase>

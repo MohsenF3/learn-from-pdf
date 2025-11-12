@@ -11,10 +11,14 @@ import { QUIZ_CONFIG } from "../../lib/config";
 import { CreateQuizSchemaType } from "../../lib/types";
 
 interface FileUploadFieldProps {
+  isGenerating: boolean;
   control: Control<CreateQuizSchemaType>;
 }
 
-export default function FileUploadField({ control }: FileUploadFieldProps) {
+export default function FileUploadField({
+  control,
+  isGenerating,
+}: FileUploadFieldProps) {
   return (
     <Controller
       name="file"
@@ -44,6 +48,7 @@ export default function FileUploadField({ control }: FileUploadFieldProps) {
               className={cn(
                 "relative rounded-lg border-2 border-dashed p-6 md:p-8 transition-colors cursor-pointer outline-none",
                 isDragActive && "border-primary bg-accent",
+                isGenerating && "opacity-50 cursor-not-allowed",
                 isDragReject && "border-destructive bg-destructive/10",
                 fieldState.invalid && "border-destructive",
                 !isDragActive &&
@@ -51,9 +56,9 @@ export default function FileUploadField({ control }: FileUploadFieldProps) {
                   "border-border hover:border-primary/50"
               )}
             >
-              <input {...getInputProps()} />
+              <input {...getInputProps()} disabled={isGenerating} />
 
-              <div className="flex flex-col items-center gap-4 pointer-events-none">
+              <div className="flex flex-col items-center gap-4 pointer-events-none ">
                 {file ? (
                   <>
                     <FileText className="h-12 w-12 text-primary" />
