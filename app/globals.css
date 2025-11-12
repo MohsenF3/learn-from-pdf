@@ -14,6 +14,18 @@
   scrollbar-width: none; /* Firefox */
 }
 
+/* Hide arrows for input type="number" in WebKit browsers (Chrome, Safari, etc.) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide arrows for input type="number" in Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 :root {
   --background: oklch(0.98 0.01 85);
   --foreground: oklch(0.2 0.02 265);

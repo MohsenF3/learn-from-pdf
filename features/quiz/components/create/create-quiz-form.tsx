@@ -129,6 +129,7 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
               label="Number of Questions"
               description={`Generate between ${QUIZ_CONFIG.QUESTIONS.MIN} and ${maxQuestions} questions`}
               disabled={isGenerating}
+              type="number"
             />
 
             <FormSelect
