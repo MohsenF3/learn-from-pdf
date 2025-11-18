@@ -1,9 +1,10 @@
+import { QuizDifficulty } from "@/features/quiz/lib/types";
 import { cn } from "@/lib/utils";
-import { QuizDifficulties, QuizHistory } from "./types";
+import { QuizHistoryDB } from "./types";
 
 // Get average score % from quiz history
 // calculateAverageScore([{ score: 8, total_questions: 10 }]) => 80
-export function calculateAverageScore(histories: QuizHistory[]): number {
+export function calculateAverageScore(histories: QuizHistoryDB[]): number {
   if (histories.length === 0) return 0;
   const totalPercentage = histories.reduce(
     (acc, quiz) => acc + (quiz.score / quiz.total_questions) * 100,
@@ -14,7 +15,7 @@ export function calculateAverageScore(histories: QuizHistory[]): number {
 
 // Find highest score % across all attempts
 // calculateBestScore([{ score: 7, total: 10 }, { score: 9, total: 10 }]) => 90
-export function calculateBestScore(histories: QuizHistory[]): number {
+export function calculateBestScore(histories: QuizHistoryDB[]): number {
   if (histories.length === 0) return 0;
   return Math.max(...histories.map((q) => (q.score / q.total_questions) * 100));
 }
@@ -25,7 +26,7 @@ export function formatPercentage(value: number, decimals = 1): string {
   return value.toFixed(decimals);
 }
 
-export const getDifficultyVariant = (difficulty: QuizDifficulties) => {
+export const getDifficultyVariant = (difficulty: QuizDifficulty) => {
   switch (difficulty) {
     case "simple":
       return "success";

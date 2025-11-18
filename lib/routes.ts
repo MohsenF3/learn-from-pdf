@@ -4,6 +4,7 @@ export const ROUTES = {
     HOME: "/",
     QUIZ_CREATE: "/quiz/create",
     QUIZ_DEMO: "/quiz/demo",
+    QUIZ_TAKE: (quizId: string) => `/quiz/create/${quizId}`,
     QUIZ_RESULT: "/quiz/result",
     QUIZ_REVIEW: "/quiz/review",
   },

@@ -6,14 +6,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { QuizHistory } from "@/features/history/lib/types";
 import { FileText } from "lucide-react";
+import { QuizHistoryDB } from "../lib/types";
 import { formatDateTime } from "../lib/utils";
 import HistoryItemCard from "./history-item-card";
 import QuestionReviewCard from "./question-review-card";
 
 export interface HistoryItemDialogProps {
-  quiz: QuizHistory;
+  quiz: QuizHistoryDB;
 }
 
 export default function HistoryItemDialog({ quiz }: HistoryItemDialogProps) {
@@ -43,7 +43,6 @@ export default function HistoryItemDialog({ quiz }: HistoryItemDialogProps) {
               question={question}
               questionIndex={questionIndex}
               totalQuestions={quiz.quiz_data.questions.length}
-              userAnswer={quiz.quiz_data.selectedAnswers[questionIndex]}
             />
           ))}
         </div>

@@ -17,14 +17,17 @@ export default function QuizReviewItems() {
       {questions.map((question, questionIndex) => {
         const userAnswer = selectedAnswers[questionIndex];
         if (userAnswer === null) return null;
+        const formattedQuestion = {
+          ...question,
+          userAnswer,
+        };
 
         return (
           <QuestionReviewCard
             key={questionIndex}
-            question={question}
+            question={formattedQuestion}
             questionIndex={questionIndex}
             totalQuestions={questions.length}
-            userAnswer={userAnswer}
           />
         );
       })}

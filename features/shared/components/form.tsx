@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils"; // Assuming you have a utility for merging class names
 import { ReactNode } from "react";
 import {
   Controller,
@@ -22,31 +23,34 @@ import {
   FieldValues,
 } from "react-hook-form";
 
-type FormControlProps<
+type FieldOrientation = "horizontal" | "vertical" | "responsive";
+type FormControlBaseProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  TTransformedValues = TFieldValues
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 > = {
   name: TName;
   label: ReactNode;
   description?: ReactNode;
-  control: ControllerProps<TFieldValues, TName, TTransformedValues>["control"];
+  control: ControllerProps<TFieldValues, TName>["control"];
+  orientation?: FieldOrientation;
+  controlFirst?: boolean;
+  className?: string;
+};
+
+type CustomControllerRenderField<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = Parameters<ControllerProps<TFieldValues, TName>["render"]>[0]["field"] & {
+  "aria-invalid": boolean;
+  id: string;
 };
 
 type FormBaseProps<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  TTransformedValues = TFieldValues
-> = FormControlProps<TFieldValues, TName, TTransformedValues> & {
-  orientation?: "horizontal" | "vertical";
-  controlFirst?: boolean;
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
+> = FormControlBaseProps<TFieldValues, TName> & {
   children: (
-    field: Parameters<
-      ControllerProps<TFieldValues, TName, TTransformedValues>["render"]
-    >[0]["field"] & {
-      "aria-invalid": boolean;
-      id: string;
-    }
+    field: CustomControllerRenderField<TFieldValues, TName>
   ) => ReactNode;
 };
 
@@ -54,16 +58,14 @@ type FormControlFunc<
   ExtraProps extends Record<string, unknown> = Record<never, never>
 > = <
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  TTransformedValues = TFieldValues
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >(
-  props: FormControlProps<TFieldValues, TName, TTransformedValues> & ExtraProps
+  props: FormControlBaseProps<TFieldValues, TName> & ExtraProps
 ) => ReactNode;
 
 function FormBase<
   TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  TTransformedValues = TFieldValues
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >({
   children,
   control,
@@ -72,22 +74,25 @@ function FormBase<
   description,
   controlFirst,
   orientation = "vertical",
-}: FormBaseProps<TFieldValues, TName, TTransformedValues>) {
+  className,
+}: FormBaseProps<TFieldValues, TName>) {
   return (
     <Controller
       control={control}
       name={name}
       render={({ field, fieldState }) => {
+        const id = field.name;
+
         const labelElement = (
           <>
-            <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
+            <FieldLabel htmlFor={id}>{label}</FieldLabel>
             {description && <FieldDescription>{description}</FieldDescription>}
           </>
         );
 
         const controlElement = children({
           ...field,
-          id: field.name,
+          id: id,
           "aria-invalid": fieldState.invalid,
         });
 
@@ -95,23 +100,47 @@ function FormBase<
           <FieldError errors={[fieldState.error]} />
         );
 
-        return (
-          <Field data-invalid={fieldState.invalid} orientation={orientation}>
-            {controlFirst ? (
-              <>
-                {controlElement}
-                <FieldContent>
-                  {labelElement}
-                  {errorElement}
-                </FieldContent>
-              </>
-            ) : (
-              <>
-                <FieldContent>{labelElement}</FieldContent>
-                {controlElement}
+        if (controlFirst) {
+          return (
+            <Field
+              data-invalid={fieldState.invalid}
+              orientation={orientation}
+              className={className}
+            >
+              {controlElement}
+              <FieldContent className="w-full">
+                {labelElement}
                 {errorElement}
-              </>
+              </FieldContent>
+            </Field>
+          );
+        }
+
+        const controlErrorGroup = (
+          <div
+            className={cn(
+              "flex flex-col gap-1.5",
+              "w-full",
+              orientation === "horizontal" && "sm:flex-1",
+              orientation === "responsive" && "@md/field-group:flex-1"
             )}
+          >
+            {controlElement}
+            {errorElement}
+          </div>
+        );
+
+        return (
+          <Field
+            data-invalid={fieldState.invalid}
+            orientation={orientation}
+            className={className}
+          >
+            <FieldContent className={cn("w-full", "flex-1/3")}>
+              {labelElement}
+            </FieldContent>
+
+            {controlErrorGroup}
           </Field>
         );
       }}
@@ -119,17 +148,16 @@ function FormBase<
   );
 }
 
-// Input with additional props support
 type InputProps = Omit<
   React.ComponentPropsWithoutRef<typeof Input>,
-  "name" | "value" | "onChange" | "onBlur" | "ref" | "id"
+  "name" | "value" | "onChange" | "onBlur" | "ref" | "id" | "aria-invalid"
 >;
 
 export const FormInput: FormControlFunc<InputProps> = ({
   placeholder,
   autoComplete,
   type,
-  className,
+  className: inputClassName,
   disabled,
   ...props
 }) => {
@@ -141,7 +169,7 @@ export const FormInput: FormControlFunc<InputProps> = ({
           placeholder={placeholder}
           autoComplete={autoComplete}
           type={type}
-          className={className}
+          className={inputClassName}
           disabled={disabled}
         />
       )}
@@ -149,16 +177,15 @@ export const FormInput: FormControlFunc<InputProps> = ({
   );
 };
 
-// Textarea with additional props support
 type TextareaProps = Omit<
   React.ComponentPropsWithoutRef<typeof Textarea>,
-  "name" | "value" | "onChange" | "onBlur" | "ref" | "id"
+  "name" | "value" | "onChange" | "onBlur" | "ref" | "id" | "aria-invalid"
 >;
 
 export const FormTextarea: FormControlFunc<TextareaProps> = ({
   placeholder,
   rows,
-  className,
+  className: textareaClassName,
   ...props
 }) => {
   return (
@@ -168,7 +195,7 @@ export const FormTextarea: FormControlFunc<TextareaProps> = ({
           {...field}
           placeholder={placeholder}
           rows={rows}
-          className={className}
+          className={textareaClassName}
         />
       )}
     </FormBase>
@@ -178,8 +205,8 @@ export const FormTextarea: FormControlFunc<TextareaProps> = ({
 export const FormSelect: FormControlFunc<{
   children: ReactNode;
   placeholder?: string;
-  orientation?: "horizontal" | "vertical";
-}> = ({ children, placeholder, ...props }) => {
+  className?: string;
+}> = ({ children, placeholder, className: selectClassName, ...props }) => {
   return (
     <FormBase {...props}>
       {({ onChange, onBlur, ref, value, ...field }) => (
@@ -189,7 +216,7 @@ export const FormSelect: FormControlFunc<{
             id={field.id}
             onBlur={onBlur}
             ref={ref}
-            className="w-full sm:w-[150px]"
+            className={cn("w-full", selectClassName)}
           >
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
@@ -204,11 +231,7 @@ export const FormCheckbox: FormControlFunc = (props) => {
   return (
     <FormBase {...props} orientation="horizontal" controlFirst>
       {({ onChange, value, ...field }) => (
-        <Checkbox
-          {...field}
-          checked={value ?? false}
-          onCheckedChange={onChange}
-        />
+        <Checkbox {...field} checked={!!value} onCheckedChange={onChange} />
       )}
     </FormBase>
   );

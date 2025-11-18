@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { QuizHistory } from "@/features/history/lib/types";
+import { QuizHistoryDB } from "@/features/history/lib/types";
 import {
   calculateAverageScore,
   calculateBestScore,
@@ -8,7 +8,7 @@ import {
 import { FileText, Target, TrendingUp } from "lucide-react";
 
 type HistoryStatsProps = {
-  history: QuizHistory[];
+  history: QuizHistoryDB[];
 };
 
 export default function HistoryStats({ history }: HistoryStatsProps) {

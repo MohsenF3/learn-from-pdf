@@ -80,6 +80,7 @@ export const extractPDFText = async (
     return {
       success: true,
       data: {
+        pdfName: file.name,
         fullText: cleanedText,
         chunks,
         pageCount,
@@ -88,8 +89,6 @@ export const extractPDFText = async (
       },
     };
   } catch (error) {
-    console.error("PDF extraction error:", error);
-
     if (error instanceof Error) {
       if (error.name === "PasswordException") {
         return {

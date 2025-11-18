@@ -5,7 +5,6 @@ import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
 import Link from "next/link";
-import StartNewQuizButton from "../review/start-new-quiz-button";
 
 export interface QuizResultActionsProps {
   user: User | null;
@@ -29,22 +28,30 @@ export default function QuizResultActions({ user }: QuizResultActionsProps) {
 
       {/* show only for logged in users */}
       {user && (
-        <StartNewQuizButton
-          className="w-full text-lg bg-transparent"
-          variant="outline"
-          redirectTo={ROUTES.PROTECTED.HISTORY}
+        <Link
+          href={ROUTES.PROTECTED.HISTORY}
+          className={cn(
+            buttonVariants({
+              variant: "outline",
+              className: "w-full text-lg bg-transparent",
+            })
+          )}
         >
           View Quiz History
-        </StartNewQuizButton>
+        </Link>
       )}
 
-      <StartNewQuizButton
-        className="w-full text-lg bg-transparent"
-        variant="outline"
-        redirectTo={ROUTES.PUBLIC.QUIZ_CREATE}
+      <Link
+        href={ROUTES.PUBLIC.QUIZ_CREATE}
+        className={cn(
+          buttonVariants({
+            variant: "outline",
+            className: "w-full text-lg bg-transparent",
+          })
+        )}
       >
         Start New Quiz
-      </StartNewQuizButton>
+      </Link>
     </div>
   );
 }

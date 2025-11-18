@@ -1,31 +1,26 @@
-export interface QuizQuestion {
-  options: string[];
-  question: string;
-  correctAnswer: number;
-}
+import {
+  QuizDifficulty,
+  QuizQuestionWithAnswers,
+} from "@/features/quiz/lib/types";
 
-export const QUIZ_DIFFICULTIES = ["simple", "medium", "hard"] as const;
-export type QuizDifficulties = (typeof QUIZ_DIFFICULTIES)[number];
-
-export interface QuizConfig {
+export interface QuizHistoryConfig {
   language: string;
-  difficulty: QuizDifficulties;
+  difficulty: QuizDifficulty;
   pdfFileName: string;
   numQuestions: number;
 }
 
-export interface QuizData {
-  config: QuizConfig;
-  questions: QuizQuestion[];
-  selectedAnswers: number[];
+export interface QuizHistoryData {
+  config: QuizHistoryConfig;
+  questions: QuizQuestionWithAnswers[];
 }
 
-export type QuizHistory = {
+export interface QuizHistoryDB {
   id: string;
   user_id: string;
+  quiz_data: QuizHistoryData;
   score: number;
   total_questions: number;
-  difficulty: QuizDifficulties;
+  difficulty: QuizDifficulty;
   created_at: string;
-  quiz_data: QuizData;
-};
+}

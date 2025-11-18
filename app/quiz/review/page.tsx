@@ -1,8 +1,11 @@
+import { buttonVariants } from "@/components/ui/button";
 import { QuizGuard } from "@/features/quiz/components/quiz-guard";
 import QuizReviewHeader from "@/features/quiz/components/review/quiz-review-header";
 import QuizReviewItems from "@/features/quiz/components/review/quiz-review-items";
-import StartNewQuizButton from "@/features/quiz/components/review/start-new-quiz-button";
+import { ROUTES } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Quiz Review",
@@ -23,7 +26,14 @@ export default function QuizReviewPage() {
                 Great job completing your quiz! 🚀 Ready to challenge yourself
                 with a new one?
               </p>
-              <StartNewQuizButton>Create New Quiz</StartNewQuizButton>
+              <Link
+                href={ROUTES.PUBLIC.QUIZ_CREATE}
+                className={cn(
+                  buttonVariants({ variant: "default", size: "lg" })
+                )}
+              >
+                Create New Quiz
+              </Link>
             </div>
           </div>
         </div>

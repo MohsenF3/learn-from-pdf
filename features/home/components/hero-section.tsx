@@ -3,7 +3,7 @@ import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
-import DemoQuizButton from "./demo-quiz-button";
+import DemoButton from "./demo-button";
 
 export function HeroSection() {
   return (
@@ -36,7 +36,13 @@ export function HeroSection() {
           <Sparkles className="ml-2 h-5 w-5" />
         </Link>
 
-        <DemoQuizButton />
+        <DemoButton
+          size="lg"
+          variant="outline"
+          className="h-12 px-8 text-base bg-transparent"
+        >
+          Try Demo Quiz
+        </DemoButton>
       </div>
 
       <div className="mt-16 grid grid-cols-2 gap-8 md:grid-cols-4">

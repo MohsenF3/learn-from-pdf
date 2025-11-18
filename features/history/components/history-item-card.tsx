@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { QuizHistory } from "@/features/history/lib/types";
+import { QuizHistoryDB } from "@/features/history/lib/types";
 import {
   formatDateTime,
   getDifficultyVariant,
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { Calendar, FileText } from "lucide-react";
 
 export interface HistoryItemCardProps {
-  quiz: QuizHistory;
+  quiz: QuizHistoryDB;
 }
 
 export default function HistoryItemCard({ quiz }: HistoryItemCardProps) {

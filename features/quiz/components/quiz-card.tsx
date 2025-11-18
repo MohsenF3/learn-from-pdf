@@ -24,34 +24,80 @@ export default function QuizCard() {
 
   const selectAnswer = useQuizStore((s) => s.selectAnswer);
 
+  const currentQuestionData = questions[currentQuestion];
+  const questionNumber = currentQuestion + 1;
+  const totalQuestions = questions.length;
+
   return (
     <Card className="border-2">
       <CardHeader>
-        <CardTitle className="text-2xl leading-relaxed">
-          {questions[currentQuestion]?.question}
-        </CardTitle>
-        <CardDescription>Select the correct answer</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <RadioGroup
-          value={currentAnswer?.toString() ?? ""}
-          onValueChange={(value) => selectAnswer(Number(value))}
+        {/* Progress indicator for screen readers */}
+        <div className="sr-only" role="status" aria-live="polite">
+          Question {questionNumber} of {totalQuestions}
+        </div>
+
+        <CardTitle
+          className="text-2xl leading-relaxed"
+          id="question-title"
+          tabIndex={-1}
         >
-          {questions[currentQuestion]?.options.map((option, index) => (
-            <Label
-              key={index}
-              htmlFor={`option-${index}`}
-              className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-colors ${
-                currentAnswer === index
-                  ? "border-primary bg-accent"
-                  : "border-border hover:border-primary/50"
-              }`}
-            >
-              <RadioGroupItem value={index.toString()} id={`option-${index}`} />
-              <span className="flex-1 text-base leading-relaxed">{option}</span>
-            </Label>
-          ))}
-        </RadioGroup>
+          {currentQuestionData?.question}
+        </CardTitle>
+
+        <CardDescription id="question-description">
+          Select the correct answer. Question {questionNumber} of{" "}
+          {totalQuestions}
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        <fieldset>
+          <legend className="sr-only">
+            Answer options for question {questionNumber}
+          </legend>
+
+          <RadioGroup
+            value={currentAnswer?.toString() ?? ""}
+            onValueChange={(value) => selectAnswer(Number(value))}
+            aria-labelledby="question-title"
+            aria-describedby="question-description"
+            aria-required="true"
+          >
+            {currentQuestionData?.options.map((option, index) => {
+              const isSelected = currentAnswer === index;
+              const optionId = `option-${currentQuestion}-${index}`;
+
+              return (
+                <Label
+                  key={index}
+                  htmlFor={optionId}
+                  className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 p-4 transition-colors focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${
+                    isSelected
+                      ? "border-primary bg-accent"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <RadioGroupItem
+                    value={index.toString()}
+                    id={optionId}
+                    aria-label={`Option ${String.fromCharCode(
+                      65 + index
+                    )}: ${option}`}
+                  />
+                  <span
+                    className="flex-1 text-base leading-relaxed"
+                    aria-hidden="true"
+                  >
+                    <span className="font-medium mr-2">
+                      {String.fromCharCode(65 + index)}.
+                    </span>
+                    {option}
+                  </span>
+                </Label>
+              );
+            })}
+          </RadioGroup>
+        </fieldset>
 
         <QuizNavigation />
       </CardContent>

@@ -1,4 +1,4 @@
-import { QUIZ_DIFFICULTIES, QuizQuestion } from "@/features/history/lib/types";
+import { QuizQuestion } from "./types";
 
 export const DEMO_QUIZ_QUESTIONS: QuizQuestion[] = [
   {
@@ -48,11 +48,16 @@ export const QUIZ_CONFIG = {
     MIN: 1,
     MAX: 15,
     DEFAULT: 5,
+
+    FREE_USER_DAILY: 3,
+    LOGGED_IN_DAILY: 10,
+    MAX_QUESTIONS_FREE: 5,
+    MAX_QUESTIONS_LOGGED_IN: 15,
   },
-  DIFFICULTIES: QUIZ_DIFFICULTIES,
+  DIFFICULTIES: ["simple", "medium", "hard"] as const,
 } as const;
 
-export const DIFFICULTY_OPTIONS = QUIZ_DIFFICULTIES.map((value) => ({
+export const DIFFICULTY_OPTIONS = QUIZ_CONFIG.DIFFICULTIES.map((value) => ({
   value,
   label: value.charAt(0).toUpperCase() + value.slice(1),
 }));

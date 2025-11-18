@@ -1,23 +1,32 @@
+import { getUser } from "@/features/auth/lib/getUser";
 import EmptyHistory from "@/features/history/components/empty-history";
 import HistoryItems from "@/features/history/components/history-items";
 import HistoryStats from "@/features/history/components/history-stats";
-import { getHistory } from "@/features/history/lib/actions";
+import { getUserQuizHistory } from "@/features/history/lib/queries";
 import BackLink from "@/features/shared/components/back-link";
 import ErrorDisplay from "@/features/shared/components/error-display";
 import { ROUTES } from "@/lib/routes";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "History",
 };
 
 export default async function HistoryPage() {
-  const result = await getHistory();
+  const user = await getUser();
 
-  if (!result.success) {
+  // check if user is logged in
+  if (!user) {
+    redirect(ROUTES.AUTH.LOGIN);
+  }
+
+  const history = await getUserQuizHistory(user.id);
+
+  if (!history.success) {
     return (
       <ErrorDisplay
-        message={result.error}
+        message={history.error}
         retryLink={ROUTES.PROTECTED.HISTORY}
       />
     );
@@ -33,12 +42,12 @@ export default async function HistoryPage() {
         </p>
       </div>
 
-      <HistoryStats history={result.data} />
+      <HistoryStats history={history.data} />
 
-      {result.data.length === 0 ? (
+      {history.data.length === 0 ? (
         <EmptyHistory />
       ) : (
-        <HistoryItems histories={result.data} />
+        <HistoryItems histories={history.data} />
       )}
     </div>
   );

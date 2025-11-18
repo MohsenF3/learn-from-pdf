@@ -10,6 +10,7 @@ import { useQuizStore } from "../store/quiz-store";
 interface QuizGuardProps extends React.PropsWithChildren {
   requireQuestions?: boolean;
   requireComplete?: boolean;
+  validateQuizId?: string;
   redirectTo?: string;
   loadingMessage?: string;
 }
@@ -17,6 +18,7 @@ interface QuizGuardProps extends React.PropsWithChildren {
 export function QuizGuard({
   requireQuestions = true,
   requireComplete = true,
+  validateQuizId = "",
   redirectTo = ROUTES.PUBLIC.HOME,
   loadingMessage = "Loading...",
   children,
@@ -33,14 +35,32 @@ export function QuizGuard({
     }))
   );
 
+  const isSessionValid = useQuizStore((s) => s.isSessionValid);
+
   React.useEffect(() => {
     // Wait for zustand persist to hydrate
     const timer = setTimeout(() => {
       const hasQuestions = questions.length > 0;
+
+      // Security check: Validate quiz_id if provided
+      let quizIdIsValid = true;
+      if (validateQuizId) {
+        quizIdIsValid = isSessionValid(validateQuizId);
+      }
+
+      // Check all requirements
       const meetsRequirements =
-        (!requireQuestions || hasQuestions) && (!requireComplete || isComplete);
+        (!requireQuestions || hasQuestions) &&
+        (!requireComplete || isComplete) &&
+        quizIdIsValid;
 
       if (!meetsRequirements) {
+        console.warn("QuizGuard: Access denied", {
+          hasQuestions,
+          isComplete,
+          quizIdIsValid,
+          validateQuizId,
+        });
         router.replace(redirectTo);
       } else {
         setIsValid(true);
@@ -52,6 +72,8 @@ export function QuizGuard({
   }, [
     questions.length,
     isComplete,
+    validateQuizId,
+    isSessionValid,
     requireQuestions,
     requireComplete,
     redirectTo,

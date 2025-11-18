@@ -6,23 +6,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { QuizQuestion } from "@/features/history/lib/types";
+import {
+  QuizQuestion,
+  QuizQuestionWithAnswers,
+} from "@/features/quiz/lib/types";
 import { getOptionClasses } from "../lib/utils";
 
 interface QuestionReviewCardProps {
-  question: QuizQuestion;
+  question: QuizQuestionWithAnswers;
   questionIndex: number;
   totalQuestions: number;
-  userAnswer: number;
+  userAnswer?: number;
 }
 
 export default function QuestionReviewCard({
   question,
   questionIndex,
   totalQuestions,
-  userAnswer,
 }: QuestionReviewCardProps) {
-  const isCorrect = userAnswer === question.correctAnswer;
+  const isCorrect = question.correctAnswer === question.userAnswer;
 
   return (
     <Card className="border-2">
@@ -45,7 +47,7 @@ export default function QuestionReviewCard({
       <CardContent>
         <OptionsList
           options={question.options}
-          userAnswer={userAnswer}
+          userAnswer={question.userAnswer}
           correctAnswer={question.correctAnswer}
         />
       </CardContent>

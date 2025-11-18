@@ -1,6 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,15 +12,21 @@ import {
 import { FieldGroup } from "@/components/ui/field";
 import { SelectItem } from "@/components/ui/select";
 import { FormInput, FormSelect } from "@/features/shared/components/form";
+import { ROUTES } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FileText, Sparkles } from "lucide-react";
-import React, { useTransition } from "react";
+import { AlertCircle, FileText, Info, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { createNewQuiz } from "../../lib/actions";
+import { extractPDFData, generateQuizQuestions } from "../../actions";
+import { useCheckRateLimit } from "../../hooks/use-check-rate-limit";
 import { DIFFICULTY_OPTIONS, QUIZ_CONFIG } from "../../lib/config";
 import { createQuizSchema } from "../../lib/schemas";
-import { CreateQuizSchemaType } from "../../lib/types";
+import { CreateQuizSchemaType, SafeQuizQuestion } from "../../lib/types";
+import { useQuizStore } from "../../store/quiz-store";
 import FileUploadField from "./file-upload-field";
 
 interface CreateQuizFormProps {
@@ -29,8 +36,13 @@ interface CreateQuizFormProps {
 type GenerationStatus = "idle" | "extracting" | "generating";
 
 export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
+  const [status, setStatus] = useState<GenerationStatus>("idle");
   const [isGenerating, startGenerating] = useTransition();
-  const [status, setStatus] = React.useState<GenerationStatus>("idle");
+
+  const router = useRouter();
+  const setSession = useQuizStore((s) => s.setSession);
+
+  const rateLimitInfo = useCheckRateLimit();
 
   const form = useForm<CreateQuizSchemaType>({
     resolver: zodResolver(createQuizSchema({ isLoggedIn })),
@@ -43,34 +55,55 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
   });
 
   const handleCreateQuiz = (data: CreateQuizSchemaType) => {
+    if (!rateLimitInfo?.canCreate) {
+      toast.error("Daily limit reached. Try again tomorrow!");
+      return;
+    }
     setStatus("extracting");
 
     startGenerating(async () => {
-      const generatingTimer = setTimeout(() => {
-        setStatus("generating");
-      }, 3000);
+      const extractResult = await extractPDFData(data.file);
 
-      const result = await createNewQuiz(data);
-
-      clearTimeout(generatingTimer);
-
-      if (!result.success) {
-        toast.error(result.error);
+      if (!extractResult.success) {
+        toast.error(extractResult.error);
         setStatus("idle");
         return;
       }
 
-      const questions = result.data;
+      setStatus("generating");
 
+      const dataToGenerate = {
+        numberOfQuestions: data.numberOfQuestions,
+        difficulty: data.difficulty,
+        extractedData: extractResult.data,
+      };
+      const quizResult = await generateQuizQuestions(dataToGenerate);
+
+      if (!quizResult.success) {
+        toast.error(quizResult.error);
+        setStatus("idle");
+        return;
+      }
+
+      const { sessionId, questions, pdfName, difficulty } = quizResult.data;
+
+      const quizQuestions = questions.map((q: SafeQuizQuestion) => ({
+        question: q.question,
+        options: q.options,
+        correctAnswer: -1,
+      }));
+
+      setSession(sessionId, pdfName, data.difficulty, quizQuestions);
       toast.success(`Generated ${questions.length} questions successfully!`);
       setStatus("idle");
-      console.log({ questions });
+
+      router.push(ROUTES.PUBLIC.QUIZ_TAKE(sessionId));
     });
   };
 
   const maxQuestions = isLoggedIn
-    ? QUIZ_CONFIG.QUESTIONS.MAX
-    : QUIZ_CONFIG.QUESTIONS.DEFAULT;
+    ? QUIZ_CONFIG.QUESTIONS.MAX_QUESTIONS_LOGGED_IN
+    : QUIZ_CONFIG.QUESTIONS.MAX_QUESTIONS_FREE;
 
   const availableDifficulties = DIFFICULTY_OPTIONS.map((item) => ({
     ...item,
@@ -100,6 +133,43 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
 
   return (
     <form onSubmit={form.handleSubmit(handleCreateQuiz)} className="space-y-6">
+      {rateLimitInfo && (
+        <Alert
+          variant={
+            !rateLimitInfo.canCreate
+              ? "warning"
+              : rateLimitInfo.remainingQuizzes <= 1
+              ? "warning"
+              : "default"
+          }
+        >
+          {rateLimitInfo.canCreate ? (
+            <Info className="h-4 w-4" />
+          ) : (
+            <AlertCircle className="h-4 w-4" />
+          )}
+          <AlertTitle>
+            {isLoggedIn ? "Daily Quiz Limit" : "Free Quiz Limit"}
+          </AlertTitle>
+          <AlertDescription>
+            {rateLimitInfo.canCreate ? (
+              <span>
+                You have <strong>{rateLimitInfo.remainingQuizzes}</strong> of{" "}
+                <strong>{rateLimitInfo.limit}</strong> quizzes remaining today.
+              </span>
+            ) : (
+              <span>
+                You've reached your daily limit of {rateLimitInfo.limit}{" "}
+                quizzes.{" "}
+                {isLoggedIn
+                  ? "Come back tomorrow for more!"
+                  : "Sign up to unlock more quizzes!"}
+              </span>
+            )}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Step 1: Upload */}
       <Card>
         <CardHeader>
@@ -116,7 +186,6 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
 
       {/* Step 2: Configuration */}
       <Card>
-        {" "}
         <CardHeader>
           <CardTitle>Step 2: Customize Your Quiz</CardTitle>
           <CardDescription>Choose your quiz settings</CardDescription>
@@ -130,6 +199,8 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
               description={`Generate between ${QUIZ_CONFIG.QUESTIONS.MIN} and ${maxQuestions} questions`}
               disabled={isGenerating}
               type="number"
+              orientation="horizontal"
+              required
             />
 
             <FormSelect
@@ -145,7 +216,7 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
                   value={opt.value}
                   disabled={opt?.isDisabled || isGenerating}
                 >
-                  {opt.label}
+                  {opt.label} {opt?.isDisabled && "(Premium)"}
                 </SelectItem>
               ))}
             </FormSelect>
@@ -155,10 +226,24 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isGenerating}
+            disabled={isGenerating || rateLimitInfo?.canCreate === false}
           >
             {getButtonContent()}
           </Button>
+
+          {!isLoggedIn && (
+            <p className="text-xs text-center text-muted-foreground">
+              <Link
+                href={ROUTES.AUTH.LOGIN}
+                className={cn(
+                  buttonVariants({ variant: "link", className: "p-0" })
+                )}
+              >
+                Sign in
+              </Link>{" "}
+              to unlock more questions and difficulty levels
+            </p>
+          )}
         </CardContent>
       </Card>
     </form>

@@ -1,8 +1,8 @@
-import { QuizHistory } from "@/features/history/lib/types";
+import { QuizHistoryDB } from "@/features/history/lib/types";
 import HistoryItemDialog from "./history-item-dialog";
 
 interface HistoryItemsProps {
-  histories: QuizHistory[];
+  histories: QuizHistoryDB[];
 }
 
 export default function HistoryItems({ histories }: HistoryItemsProps) {

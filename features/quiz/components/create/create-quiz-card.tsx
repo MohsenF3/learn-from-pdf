@@ -1,4 +1,3 @@
-import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,9 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getUser } from "@/features/auth/lib/getUser";
-import { ROUTES } from "@/lib/routes";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
+import DemoButton from "@/features/home/components/demo-button";
 import CreateQuizForm from "./create-quiz-form";
 
 export default async function CreateQuizCard() {
@@ -30,18 +27,14 @@ export default async function CreateQuizCard() {
           <p className="mb-3 text-center text-sm text-muted-foreground">
             Or try with sample questions
           </p>
-          <Link
-            href={ROUTES.PUBLIC.QUIZ_DEMO}
-            className={cn(
-              buttonVariants({
-                variant: "outline",
-                size: "lg",
-                className: "w-full bg-transparent",
-              })
-            )}
+
+          <DemoButton
+            size="lg"
+            variant="outline"
+            className="w-full bg-transparent"
           >
             Use Test Data
-          </Link>
+          </DemoButton>
         </div>
       </CardContent>
     </Card>
