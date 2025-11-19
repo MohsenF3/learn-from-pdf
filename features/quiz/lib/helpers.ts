@@ -3,6 +3,7 @@ import { tryCatch } from "@/lib/try-catch";
 import { ActionResult } from "@/lib/types";
 import { huggingface } from "@ai-sdk/huggingface";
 import { generateText } from "ai";
+import { headers } from "next/headers";
 import { cache } from "react";
 import {
   BuildPromptParams,
@@ -13,18 +14,20 @@ import {
 } from "./types";
 
 export const getClientIP = cache(async (): Promise<string> => {
-  const [res, error] = await tryCatch(
-    fetch(`/api/check-limit`, {
-      cache: "no-store",
-    })
-  );
+  const h = await headers(); // ← Next.js headers() in server context
 
-  if (error) {
-    return "unknown";
+  const forwarded = h.get("x-forwarded-for");
+  const realIp = h.get("x-real-ip"); // fallback, rarely needed on Vercel
+  const vercelIp = h.get("x-vercel-forwarded-for"); // sometimes present
+
+  if (forwarded) {
+    // x-forwarded-for can be a comma-separated list; the first one is the original client
+    return forwarded.split(",")[0].trim();
   }
+  if (vercelIp) return vercelIp.split(",")[0].trim();
+  if (realIp) return realIp;
 
-  const data = await res.json();
-  return data.ip || "unknown";
+  return "unknown";
 });
 
 export function isValidQuestion(q: any): q is QuizQuestion {

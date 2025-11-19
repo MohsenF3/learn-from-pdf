@@ -1,6 +1,5 @@
 "use client";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -15,14 +14,13 @@ import { FormInput, FormSelect } from "@/features/shared/components/form";
 import { ROUTES } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, FileText, Info, Sparkles } from "lucide-react";
+import { FileText, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { extractPDFData, generateQuizQuestions } from "../../actions";
-import { useCheckRateLimit } from "../../hooks/use-check-rate-limit";
 import {
   DIFFICULTY_OPTIONS,
   LANGUAGE_OPTIONS,
@@ -35,18 +33,20 @@ import FileUploadField from "./file-upload-field";
 
 interface CreateQuizFormProps {
   isLoggedIn: boolean;
+  canCreate: boolean;
 }
 
 type GenerationStatus = "idle" | "extracting" | "generating";
 
-export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
+export default function CreateQuizForm({
+  isLoggedIn,
+  canCreate,
+}: CreateQuizFormProps) {
   const [status, setStatus] = useState<GenerationStatus>("idle");
   const [isGenerating, startGenerating] = useTransition();
 
   const router = useRouter();
   const setSession = useQuizStore((s) => s.setSession);
-
-  const rateLimitInfo = useCheckRateLimit();
 
   const form = useForm<CreateQuizSchemaType>({
     resolver: zodResolver(createQuizSchema({ isLoggedIn })),
@@ -60,7 +60,7 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
   });
 
   const handleCreateQuiz = (data: CreateQuizSchemaType) => {
-    if (!rateLimitInfo?.canCreate) {
+    if (!canCreate) {
       toast.error("Daily limit reached. Try again tomorrow!");
       return;
     }
@@ -145,43 +145,6 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
 
   return (
     <form onSubmit={form.handleSubmit(handleCreateQuiz)} className="space-y-6">
-      {rateLimitInfo && (
-        <Alert
-          variant={
-            !rateLimitInfo.canCreate
-              ? "warning"
-              : rateLimitInfo.remainingQuizzes <= 1
-              ? "warning"
-              : "default"
-          }
-        >
-          {rateLimitInfo.canCreate ? (
-            <Info className="h-4 w-4" />
-          ) : (
-            <AlertCircle className="h-4 w-4" />
-          )}
-          <AlertTitle>
-            {isLoggedIn ? "Daily Quiz Limit" : "Free Quiz Limit"}
-          </AlertTitle>
-          <AlertDescription>
-            {rateLimitInfo.canCreate ? (
-              <span>
-                You have <strong>{rateLimitInfo.remainingQuizzes}</strong> of{" "}
-                <strong>{rateLimitInfo.limit}</strong> quizzes remaining today.
-              </span>
-            ) : (
-              <span>
-                You've reached your daily limit of {rateLimitInfo.limit}{" "}
-                quizzes.{" "}
-                {isLoggedIn
-                  ? "Come back tomorrow for more!"
-                  : "Sign up to unlock more quizzes!"}
-              </span>
-            )}
-          </AlertDescription>
-        </Alert>
-      )}
-
       {/* Step 1: Upload */}
       <Card>
         <CardHeader>
@@ -252,7 +215,7 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isGenerating || rateLimitInfo?.canCreate === false}
+            disabled={isGenerating || canCreate === false}
           >
             {getButtonContent()}
           </Button>
