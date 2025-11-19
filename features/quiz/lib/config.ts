@@ -178,9 +178,24 @@ export const QUIZ_CONFIG = {
     MAX_QUESTIONS_LOGGED_IN: 15,
   },
   DIFFICULTIES: ["simple", "medium", "hard"] as const,
+  LANGUAGES: [
+    "English",
+    "Français",
+    "Español",
+    "Deutsch",
+    "Italiano",
+    "Русский",
+    "中文",
+    "فارسی",
+  ] as const,
 } as const;
 
 export const DIFFICULTY_OPTIONS = QUIZ_CONFIG.DIFFICULTIES.map((value) => ({
+  value,
+  label: value.charAt(0).toUpperCase() + value.slice(1),
+}));
+
+export const LANGUAGE_OPTIONS = QUIZ_CONFIG.LANGUAGES.map((value) => ({
   value,
   label: value.charAt(0).toUpperCase() + value.slice(1),
 }));

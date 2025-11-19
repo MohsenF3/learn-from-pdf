@@ -14,11 +14,12 @@ import { useQuizStore } from "../store/quiz-store";
 import QuizNavigation from "./quiz-navigation";
 
 export default function QuizCard() {
-  const { questions, currentQuestion, currentAnswer } = useQuizStore(
+  const { questions, currentQuestion, currentAnswer, language } = useQuizStore(
     useShallow((s) => ({
       questions: s.questions,
       currentQuestion: s.currentQuestion,
       currentAnswer: s.currentAnswer,
+      language: s.language,
     }))
   );
 
@@ -27,6 +28,8 @@ export default function QuizCard() {
   const currentQuestionData = questions[currentQuestion];
   const questionNumber = currentQuestion + 1;
   const totalQuestions = questions.length;
+
+  const isRTL = language === "فارسی";
 
   return (
     <Card className="border-2">
@@ -40,6 +43,7 @@ export default function QuizCard() {
           className="text-2xl leading-relaxed"
           id="question-title"
           tabIndex={-1}
+          dir={isRTL ? "rtl" : "ltr"}
         >
           {currentQuestionData?.question}
         </CardTitle>
@@ -76,6 +80,7 @@ export default function QuizCard() {
                       ? "border-primary bg-accent"
                       : "border-border hover:border-primary/50"
                   }`}
+                  dir={isRTL ? "rtl" : "ltr"}
                 >
                   <RadioGroupItem
                     value={index.toString()}

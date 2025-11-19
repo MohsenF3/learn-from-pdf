@@ -108,19 +108,15 @@ function buildPrompt({
   chunkIndex,
   totalChunks,
   pageCount,
+  language,
 }: BuildPromptParams): string {
   const contextInfo =
     chunkIndex && totalChunks && pageCount
       ? `This is section ${chunkIndex} of ${totalChunks} from a ${pageCount}-page document.\n\n`
       : "";
-
   const difficultyGuide = getDifficultyGuide(difficulty);
 
-  return `You are a precise quiz generator. Generate **exactly** ${questionsNeeded} multiple-choice questions at "${difficulty}" difficulty.
-
-${contextInfo}Content:
-${content}
-
+  return `You are a precise quiz generator expert in ${language}, with deep knowledge of linguistics and cultural nuances. Generate **exactly** ${questionsNeeded} multiple-choice questions at "${difficulty}" difficulty. ${contextInfo}Content: ${content}
 Return **only** a valid JSON object with this exact shape:
 {
   "questions": [
@@ -133,16 +129,19 @@ Return **only** a valid JSON object with this exact shape:
 }
 
 Rules:
-- Exactly ${questionsNeeded} unique questions${
+- Output must be written entirely in **${language}**, using correct script (e.g., Persian script for Farsi), grammar, natural phrasing, spelling, spacing, and punctuation. For Farsi, ensure proper RTL formatting and use Persian question marks (؟).
+- For English words, proper nouns, or technical terms in the content that lack a good, natural corresponding word or transliteration in ${language} (e.g., specific names like "Aboriginal", "Australia", or tech terms like "programming"), **do not translate or transliterate them**. Keep them in their original Latin/English script embedded within the ${language} text for accuracy and readability.
+- If the content is not fully in ${language}, accurately adapt and translate only the necessary parts to create questions and options fully in ${language}, but follow the no-translation rule above for untranslatable terms.
+- Exactly ${questionsNeeded} unique, high-quality questions${
     chunkIndex ? " from THIS section" : ""
-  }.
-- Each question has **exactly 4** non-empty, unique options.
-- correctAnswer is an integer 0–3.
-- Questions must be based **solely** on the provided content.
-- Difficulty: ${difficultyGuide}
+  }. Questions should be clear, engaging, and free of errors or absurdities.
+- Each question has **exactly 4** non-empty, unique, plausible distractor options that are full, natural phrases or sentences. Make distractors realistic and based on common misconceptions from the content.
+- Options are an array of strings (actual choice texts, without prefixes like "A:" or "B:").
+- correctAnswer is an integer 0–3 indicating the index of the correct option.
+- Questions and options must be based **solely** on the provided content—do not add external knowledge, assumptions, or implausible scenarios.
+- Difficulty: ${difficultyGuide}. Ensure questions challenge appropriately without being misleading.
 - **No markdown, no backticks, no explanations, no extra text.**
-- JSON must be 100% parsable (no trailing commas, escaped quotes).
-
+- JSON must be 100% parsable (no trailing commas, properly escaped quotes if needed).
 Return only the JSON object.`;
 }
 
@@ -152,11 +151,13 @@ export async function generateQuestionsFromSingleChunk({
   totalQuestions,
   chunkIndex,
   totalChunks,
+  language,
   pageCount,
 }: GenerateSingleChunkParams): Promise<ActionResult<QuizQuestion[]>> {
   const prompt = buildPrompt({
     content: chunk,
     difficulty,
+    language,
     questionsNeeded: totalQuestions,
     chunkIndex,
     totalChunks,
@@ -209,6 +210,7 @@ export async function generateQuestionsFromMultipleChunks({
   chunks,
   difficulty,
   totalQuestions,
+  language,
   pageCount,
 }: GenerateMultipleChunksParams): Promise<ActionResult<QuizQuestion[]>> {
   const selectedChunks = selectRepresentativeChunks(chunks, totalQuestions);
@@ -228,6 +230,7 @@ export async function generateQuestionsFromMultipleChunks({
     const result = await generateQuestionsFromSingleChunk({
       chunk: selectedChunks[i],
       difficulty,
+      language,
       totalQuestions: questionsNeeded,
       chunkIndex: i + 1,
       totalChunks: selectedChunks.length,

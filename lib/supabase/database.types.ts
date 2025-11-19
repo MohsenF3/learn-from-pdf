@@ -80,6 +80,7 @@ export type Database = {
         Row: {
           created_at: string;
           difficulty: string;
+          language?: string;
           expires_at: string;
           id: string;
           ip_address: string | null;

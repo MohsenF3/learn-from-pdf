@@ -28,6 +28,7 @@ interface GenerateQuizParams extends Omit<CreateQuizSchemaType, "file"> {
 export const generateQuizQuestions = async ({
   numberOfQuestions,
   difficulty,
+  language,
   extractedData,
 }: GenerateQuizParams): Promise<ActionResult<QuizSession>> => {
   const user = await getUser();
@@ -47,7 +48,8 @@ export const generateQuizQuestions = async ({
   const questionsResult = await generateQuestions(
     extractedData,
     difficulty,
-    numberOfQuestions
+    numberOfQuestions,
+    language
   );
   if (!questionsResult.success) {
     return questionsResult;
@@ -58,7 +60,8 @@ export const generateQuizQuestions = async ({
     user,
     questionsResult.data,
     extractedData.pdfName,
-    difficulty as QuizDifficulty
+    difficulty as QuizDifficulty,
+    language
   );
 };
 
@@ -139,7 +142,8 @@ const checkRateLimit = async (
 const generateQuestions = async (
   extractedData: PDFExtractionResult,
   difficulty: QuizDifficulty,
-  numberOfQuestions: string
+  numberOfQuestions: string,
+  language: string
 ): Promise<ActionResult<QuizQuestion[]>> => {
   const { chunks, isChunked, pageCount } = extractedData;
   const totalQuestions = Number(numberOfQuestions);
@@ -148,12 +152,14 @@ const generateQuestions = async (
     ? await generateQuestionsFromMultipleChunks({
         chunks,
         difficulty,
+        language,
         totalQuestions,
         pageCount,
       })
     : await generateQuestionsFromSingleChunk({
         chunk: chunks[0],
         difficulty,
+        language,
         totalQuestions,
       });
 };
@@ -163,7 +169,8 @@ const createQuizSession = async (
   user: User | null,
   fullQuestions: QuizQuestion[],
   pdfName: string,
-  difficulty: QuizDifficulty
+  difficulty: QuizDifficulty,
+  language: string
 ): Promise<ActionResult<QuizSession>> => {
   const ip = !user ? await getClientIP() : null;
 
@@ -175,6 +182,7 @@ const createQuizSession = async (
       questions: questionsToJson(fullQuestions),
       pdf_name: pdfName,
       difficulty,
+      language,
     })
     .select()
     .single();

@@ -43,5 +43,13 @@ export const createQuizSchema = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
         }
       },
     }),
+
+    language: z.enum(QUIZ_CONFIG.LANGUAGES, {
+      error: ({ code }) => {
+        if (code === "invalid_value") {
+          return "Please select a language";
+        }
+      },
+    }),
   });
 };

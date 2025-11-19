@@ -23,7 +23,11 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { extractPDFData, generateQuizQuestions } from "../../actions";
 import { useCheckRateLimit } from "../../hooks/use-check-rate-limit";
-import { DIFFICULTY_OPTIONS, QUIZ_CONFIG } from "../../lib/config";
+import {
+  DIFFICULTY_OPTIONS,
+  LANGUAGE_OPTIONS,
+  QUIZ_CONFIG,
+} from "../../lib/config";
 import { createQuizSchema } from "../../lib/schemas";
 import { CreateQuizSchemaType, SafeQuizQuestion } from "../../lib/types";
 import { useQuizStore } from "../../store/quiz-store";
@@ -50,6 +54,7 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
       file: undefined,
       numberOfQuestions: "5",
       difficulty: "simple",
+      language: "English",
     },
     mode: "onTouched",
   });
@@ -75,6 +80,7 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
       const dataToGenerate = {
         numberOfQuestions: data.numberOfQuestions,
         difficulty: data.difficulty,
+        language: data.language,
         extractedData: extractResult.data,
       };
       const quizResult = await generateQuizQuestions(dataToGenerate);
@@ -93,7 +99,13 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
         correctAnswer: -1,
       }));
 
-      setSession(sessionId, pdfName, data.difficulty, quizQuestions);
+      setSession(
+        sessionId,
+        pdfName,
+        data.difficulty,
+        quizQuestions,
+        data.language
+      );
       toast.success(`Generated ${questions.length} questions successfully!`);
       setStatus("idle");
 
@@ -217,6 +229,20 @@ export default function CreateQuizForm({ isLoggedIn }: CreateQuizFormProps) {
                   disabled={opt?.isDisabled || isGenerating}
                 >
                   {opt.label} {opt?.isDisabled && "(Premium)"}
+                </SelectItem>
+              ))}
+            </FormSelect>
+
+            <FormSelect
+              control={form.control}
+              name="language"
+              label="Language"
+              description="Choose the language of the questions"
+              orientation="horizontal"
+            >
+              {LANGUAGE_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
                 </SelectItem>
               ))}
             </FormSelect>

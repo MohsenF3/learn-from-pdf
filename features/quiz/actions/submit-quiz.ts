@@ -116,7 +116,7 @@ const saveToHistory = async (
 ): Promise<ActionResult<null>> => {
   const quizData = {
     config: {
-      language: "English",
+      language: session.language,
       difficulty: session.difficulty,
       pdfFileName: session.pdf_name,
       numQuestions: results.length,

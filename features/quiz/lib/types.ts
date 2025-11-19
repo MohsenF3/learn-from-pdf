@@ -41,6 +41,7 @@ export interface PDFExtractionResult {
 interface BaseGenerationParams {
   difficulty: QuizDifficulty;
   totalQuestions: number;
+  language: string;
 }
 
 interface ChunkMetadata {
@@ -62,7 +63,7 @@ export interface GenerateMultipleChunksParams extends BaseGenerationParams {
 
 export interface BuildPromptParams
   extends Partial<ChunkMetadata>,
-    Pick<BaseGenerationParams, "difficulty"> {
+    Pick<BaseGenerationParams, "difficulty" | "language"> {
   content: string;
   questionsNeeded: number;
 }

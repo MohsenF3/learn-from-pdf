@@ -12,6 +12,7 @@ const initialQuizState: QuizState = {
   sessionCreatedAt: null,
   pdfName: null,
   difficulty: null,
+  language: null,
 
   // Quiz progress
   currentQuestion: 0,
@@ -34,12 +35,13 @@ export const useQuizStore = create<QuizStore>()(
       (set, get) => ({
         ...initialQuizState,
 
-        setSession: (sessionId, pdfName, difficulty, questions) =>
+        setSession: (sessionId, pdfName, difficulty, questions, language) =>
           set(
             produce((draft: QuizState) => {
               draft.sessionId = sessionId;
               draft.pdfName = pdfName;
               draft.difficulty = difficulty;
+              draft.language = language;
               draft.sessionCreatedAt = Date.now();
               draft.questions = questions;
               draft.selectedAnswers = Array(questions.length).fill(null);
@@ -124,6 +126,7 @@ export const useQuizStore = create<QuizStore>()(
               draft.pdfName = null;
               draft.sessionCreatedAt = null;
               draft.difficulty = null;
+              draft.language = null;
               draft.isDemo = true;
             }),
             false,
@@ -161,6 +164,7 @@ export const useQuizStore = create<QuizStore>()(
           sessionCreatedAt: state.sessionCreatedAt,
           pdfName: state.pdfName,
           difficulty: state.difficulty,
+          language: state.language,
           currentQuestion: state.currentQuestion,
           selectedAnswers: state.selectedAnswers,
           currentAnswer: state.currentAnswer,

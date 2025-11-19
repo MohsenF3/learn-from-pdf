@@ -5,6 +5,7 @@ interface SessionMetadata {
   sessionCreatedAt: number | null;
   pdfName: string | null;
   difficulty: QuizDifficulty | null;
+  language: string | null;
 }
 
 interface QuizProgress {
@@ -29,7 +30,8 @@ export interface QuizActions {
     sessionId: string,
     pdfName: string,
     difficulty: QuizDifficulty,
-    questions: QuizQuestion[]
+    questions: QuizQuestion[],
+    language: string
   ) => void;
   selectAnswer: (answer: number) => void;
   nextQuestion: () => void;
