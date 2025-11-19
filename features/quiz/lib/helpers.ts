@@ -3,7 +3,7 @@ import { tryCatch } from "@/lib/try-catch";
 import { ActionResult } from "@/lib/types";
 import { huggingface } from "@ai-sdk/huggingface";
 import { generateText } from "ai";
-import { headers } from "next/headers";
+import { cache } from "react";
 import {
   BuildPromptParams,
   GenerateMultipleChunksParams,
@@ -12,17 +12,20 @@ import {
   QuizQuestion,
 } from "./types";
 
-export async function getClientIP(): Promise<string> {
-  const headersList = await headers();
-  const forwarded = headersList.get("x-forwarded-for");
-  const realIp = headersList.get("x-real-ip");
+export const getClientIP = cache(async (): Promise<string> => {
+  const [res, error] = await tryCatch(
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/get-ip`, {
+      cache: "no-store",
+    })
+  );
 
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
+  if (error) {
+    return "unknown";
   }
 
-  return realIp || "unknown";
-}
+  const data = await res.json();
+  return data.ip || "unknown";
+});
 
 export function isValidQuestion(q: any): q is QuizQuestion {
   return (
