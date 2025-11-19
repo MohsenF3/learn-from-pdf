@@ -49,7 +49,6 @@ export const submitQuizAnswers = async (
     .eq("id", sessionId);
 
   if (updateError) {
-    console.error("Error updating quiz session:", updateError);
     return {
       success: false,
       error: "Failed to update quiz session",
@@ -138,7 +137,6 @@ const saveToHistory = async (
   });
 
   if (error) {
-    console.error("Error saving to history:", error);
     return {
       success: false,
       error: "Failed to save quiz to history",

@@ -35,7 +35,6 @@ const checkAnonymousUserLimit = async (
   );
 
   if (error) {
-    console.error("Error checking anonymous limit:", error);
     return {
       success: false,
       error: "Failed to check quiz limit",
@@ -79,7 +78,6 @@ const checkLoggedInUserLimit = async (
   );
 
   if (error) {
-    console.error("Error checking quiz limit:", error);
     return {
       success: false,
       error: "Failed to check quiz limit",

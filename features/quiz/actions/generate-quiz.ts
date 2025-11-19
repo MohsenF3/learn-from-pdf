@@ -188,7 +188,6 @@ const createQuizSession = async (
     .single();
 
   if (sessionError || !session) {
-    console.error("Error creating quiz session:", sessionError);
     return {
       success: false,
       error: "Failed to create quiz session",
@@ -201,7 +200,6 @@ const createQuizSession = async (
     });
 
     if (error) {
-      console.error("Error incrementing quiz count:", error);
       return {
         success: false,
         error: "Failed to increment quiz count",

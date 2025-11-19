@@ -55,12 +55,6 @@ export function QuizGuard({
         quizIdIsValid;
 
       if (!meetsRequirements) {
-        console.warn("QuizGuard: Access denied", {
-          hasQuestions,
-          isComplete,
-          quizIdIsValid,
-          validateQuizId,
-        });
         router.replace(redirectTo);
       } else {
         setIsValid(true);

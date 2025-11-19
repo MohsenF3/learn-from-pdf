@@ -14,7 +14,7 @@ import {
 
 export const getClientIP = cache(async (): Promise<string> => {
   const [res, error] = await tryCatch(
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/get-ip`, {
+    fetch(`/api/check-limit`, {
       cache: "no-store",
     })
   );
