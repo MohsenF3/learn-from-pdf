@@ -1,7 +1,7 @@
 import { produce } from "immer";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
-import { DEMO_QUIZ_QUESTIONS } from "../lib/config";
+import { getRandomQuestions, QUIZ_CONFIG } from "../lib/config";
 import { QuizState, QuizStore } from "./type";
 
 const SESSION_EXPIRY_HOURS = 24;
@@ -110,10 +110,11 @@ export const useQuizStore = create<QuizStore>()(
         loadTestData: () =>
           set(
             produce((draft: QuizState) => {
-              draft.questions = DEMO_QUIZ_QUESTIONS;
-              draft.selectedAnswers = Array(DEMO_QUIZ_QUESTIONS.length).fill(
-                null
+              const randomQuestions = getRandomQuestions(
+                QUIZ_CONFIG.QUESTIONS.DEFAULT
               );
+              draft.questions = randomQuestions;
+              draft.selectedAnswers = Array(randomQuestions.length).fill(null);
               draft.currentQuestion = 0;
               draft.currentAnswer = null;
               draft.score = null;
