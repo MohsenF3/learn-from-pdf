@@ -1,5 +1,4 @@
 import { ActionResult } from "@/lib/types";
-import { PDFParse } from "pdf-parse";
 import { QUIZ_CONFIG } from "./config";
 import { PDFExtractionResult } from "./types";
 
@@ -10,7 +9,7 @@ const MAX_CONTEXT_LENGTH = 15000;
 export const extractPDFText = async (
   file: File
 ): Promise<ActionResult<PDFExtractionResult>> => {
-  let parser: PDFParse | null = null;
+  let parser: any = null;
 
   try {
     // Validate file type
@@ -49,6 +48,7 @@ export const extractPDFText = async (
     }
 
     // Extract text
+    const { PDFParse } = await import("pdf-parse");
     parser = new PDFParse({ data: buffer });
     const textResult = await parser.getText();
 
