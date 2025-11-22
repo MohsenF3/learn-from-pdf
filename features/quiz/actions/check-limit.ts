@@ -4,8 +4,8 @@ import { getUser } from "@/features/auth/lib/getUser";
 import { SupabaseService } from "@/lib/supabase/database.types";
 import { createClientFromServer } from "@/lib/supabase/server";
 import { ActionResult } from "@/lib/types";
+import { headers } from "next/headers";
 import { QUIZ_CONFIG } from "../lib/config";
-import { getClientIP } from "../lib/helpers";
 import { RateLimitInfo } from "../lib/types";
 
 export const checkQuizLimit = async (): Promise<
@@ -107,4 +107,20 @@ const checkLoggedInUserLimit = async (
       isLoggedIn: true,
     },
   };
+};
+
+export const getClientIP = async (): Promise<string> => {
+  const h = await headers(); // Next.js headers() is now called directly here
+
+  const forwarded = h.get("x-forwarded-for");
+  const realIp = h.get("x-real-ip");
+  const vercelIp = h.get("x-vercel-forwarded-for");
+
+  if (forwarded) {
+    return forwarded.split(",")[0].trim();
+  }
+  if (vercelIp) return vercelIp.split(",")[0].trim();
+  if (realIp) return realIp;
+
+  return "unknown";
 };

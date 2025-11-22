@@ -3,7 +3,6 @@ import { tryCatch } from "@/lib/try-catch";
 import { ActionResult } from "@/lib/types";
 import { huggingface } from "@ai-sdk/huggingface";
 import { generateText } from "ai";
-import { headers } from "next/headers";
 import {
   BuildPromptParams,
   GenerateMultipleChunksParams,
@@ -11,22 +10,6 @@ import {
   QuizDifficulty,
   QuizQuestion,
 } from "./types";
-
-export const getClientIP = async (): Promise<string> => {
-  const h = await headers();
-
-  const forwarded = h.get("x-forwarded-for");
-  const realIp = h.get("x-real-ip");
-  const vercelIp = h.get("x-vercel-forwarded-for");
-
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
-  }
-  if (vercelIp) return vercelIp.split(",")[0].trim();
-  if (realIp) return realIp;
-
-  return "unknown";
-};
 
 export function isValidQuestion(q: any): q is QuizQuestion {
   return (

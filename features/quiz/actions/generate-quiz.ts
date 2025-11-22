@@ -9,7 +9,6 @@ import { QUIZ_CONFIG } from "../lib/config";
 import {
   generateQuestionsFromMultipleChunks,
   generateQuestionsFromSingleChunk,
-  getClientIP,
   questionsToJson,
 } from "../lib/helpers";
 import {
@@ -20,6 +19,7 @@ import {
   QuizSession,
   SafeQuizQuestion,
 } from "../lib/types";
+import { getClientIP } from "./check-limit";
 
 interface GenerateQuizParams extends Omit<CreateQuizSchemaType, "file"> {
   extractedData: PDFExtractionResult;
