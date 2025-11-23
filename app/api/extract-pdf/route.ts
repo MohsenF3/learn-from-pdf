@@ -2,15 +2,12 @@ import { getUser } from "@/features/auth/lib/getUser";
 import { createQuizSchema } from "@/features/quiz/lib/schemas";
 import { QUIZ_CONFIG } from "@/features/quiz/lib/config";
 import { NextRequest, NextResponse } from "next/server";
-import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
+import { PDFParse } from "pdf-parse";
 
 export const maxDuration = 60;
 
 const MIN_TEXT_LENGTH = 100;
 const MAX_CONTEXT_LENGTH = 15000;
-
-// Set worker source for pdfjs v5.x
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.394/pdf.worker.mjs`;
 
 function cleanTextContent(text: string): string {
   return text
@@ -171,19 +168,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract text using pdfjs
+    // Extract text using pdf-parse
     try {
-      const pdf = await pdfjs.getDocument({ data: buffer }).promise;
-      let fullText = "";
-
-      for (let i = 1; i <= pdf.numPages; i++) {
-        const page = await pdf.getPage(i);
-        const textContent = await page.getTextContent();
-        const pageText = textContent.items
-          .map((item: any) => item.str || "")
-          .join(" ");
-        fullText += pageText + "\n";
-      }
+      const parser = new PDFParse({ data: buffer });
+      const textResult = await parser.getText();
+      const infoResult = await parser.getInfo();
+      const fullText = textResult.text;
+      const pageCount = infoResult.pages.length;
 
       if (!fullText.trim()) {
         return NextResponse.json(
@@ -202,7 +193,6 @@ export async function POST(request: NextRequest) {
       // Clean and chunk
       const cleanedText = cleanTextContent(fullText);
       const characterCount = cleanedText.length;
-      const pageCount = pdf.numPages;
 
       const isChunked = characterCount > MAX_CONTEXT_LENGTH;
       const chunks = isChunked
