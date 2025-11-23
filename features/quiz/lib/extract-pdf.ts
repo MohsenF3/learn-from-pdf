@@ -1,6 +1,30 @@
-import "server-only";
+// Setup polyfills BEFORE any imports
+if (typeof global !== "undefined") {
+  if (!global.DOMMatrix) {
+    global.DOMMatrix = class DOMMatrix {
+      constructor(public values: any = []) {}
+    } as any;
+  }
+
+  if (!global.DOMPoint) {
+    global.DOMPoint = class DOMPoint {
+      constructor(
+        public x: number = 0,
+        public y: number = 0,
+        public z: number = 0,
+        public w: number = 1
+      ) {}
+    } as any;
+  }
+
+  if (!global.CanvasRenderingContext2D) {
+    global.CanvasRenderingContext2D = class CanvasRenderingContext2D {} as any;
+  }
+}
+
 import { ActionResult } from "@/lib/types";
 import { PDFParse } from "pdf-parse";
+import "server-only";
 import { QUIZ_CONFIG } from "./config";
 import { PDFExtractionResult } from "./types";
 
@@ -120,69 +144,52 @@ export const extractPDFText = async (
 };
 
 function cleanTextContent(text: string): string {
-  return (
-    text
-      // 1. Remove common PDF page footers/headers
-      .replace(/-- \d+ of \d+ --/g, "")
-      .replace(/Page \d+ of \d+/gi, "")
-      .replace(/^\s*\d+\s*$/gm, "")
+  return text
+    .replace(/-- \d+ of \d+ --/g, "")
+    .replace(/Page \d+ of \d+/gi, "")
+    .replace(/^\s*\d+\s*$/gm, "")
+    .replace(/[\r\n\t\f\v\u00A0\u200B\u2028\u2029]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .replace(/^\s*[-•·▪▫]\s*/gm, "• ")
+    .replace(/^\s*◦\s*/gm, "◦ ")
+    .replace(/^\s*\d+\.\s+/gm, (match, offset, str) => {
+      const prev = str.slice(Math.max(0, offset - 50), offset);
+      return /\n/.test(prev) ? `\n${match.trim()} ` : match;
+    })
+    .replace(/\|\s*\|/g, " ")
+    .replace(/(\s*\|\s*){2,}/g, " ")
+    .replace(/^\s*\|\s*/gm, "")
+    .replace(/[^\S\r\n]*\bh[yY]phen\b[^\S\r\n]*/g, "-")
+    .replace(/\s+…\s+/g, "… ")
+    .replace(/[\u2013\u2014]/g, "—")
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .reduce((acc: string[], line: string) => {
+      const last = acc[acc.length - 1];
+      const isHeader =
+        /^[A-ZÀ-Ú]([A-ZÀ-Ú\s&:-]+[A-ZÀ-Ú])?$/.test(line) || /:$/.test(line);
+      const isListItem = /^• |^\d+\.\s/.test(line);
 
-      // 2. Replace all whitespace variants with a single space
-      .replace(/[\r\n\t\f\v\u00A0\u200B\u2028\u2029]+/g, " ")
+      if (acc.length === 0) {
+        acc.push(line);
+      } else if (isHeader || isListItem) {
+        acc.push("\n" + line);
+      } else if (last && !last.endsWith("\n")) {
+        acc[acc.length - 1] += " " + line;
+      } else {
+        acc.push(line);
+      }
 
-      // 3. Collapse multiple spaces
-      .replace(/\s{2,}/g, " ")
-
-      // 4. Clean up bullet points and list markers
-      .replace(/^\s*[-•·▪▫]\s*/gm, "• ")
-      .replace(/^\s*◦\s*/gm, "◦ ")
-      .replace(/^\s*\d+\.\s+/gm, (match, offset, str) => {
-        const prev = str.slice(Math.max(0, offset - 50), offset);
-        return /\n/.test(prev) ? `\n${match.trim()} ` : match;
-      })
-
-      // 5. Remove pipe tables and vertical bars
-      .replace(/\|\s*\|/g, " ")
-      .replace(/(\s*\|\s*){2,}/g, " ")
-      .replace(/^\s*\|\s*/gm, "")
-
-      // 6. Fix common OCR artifacts
-      .replace(/[^\S\r\n]*\bh[yY]phen\b[^\S\r\n]*/g, "-")
-      .replace(/\s+…\s+/g, "… ")
-      .replace(/[\u2013\u2014]/g, "—")
-
-      // 7. Normalize section breaks
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .reduce((acc: string[], line: string) => {
-        const last = acc[acc.length - 1];
-        const isHeader =
-          /^[A-ZÀ-Ú]([A-ZÀ-Ú\s&:-]+[A-ZÀ-Ú])?$/.test(line) || /:$/.test(line);
-        const isListItem = /^• |^\d+\.\s/.test(line);
-
-        if (acc.length === 0) {
-          acc.push(line);
-        } else if (isHeader || isListItem) {
-          acc.push("\n" + line);
-        } else if (last && !last.endsWith("\n")) {
-          acc[acc.length - 1] += " " + line;
-        } else {
-          acc.push(line);
-        }
-
-        return acc;
-      }, [])
-      .join("")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim()
-  );
+      return acc;
+    }, [])
+    .join("")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
 }
 
 function createIntelligentChunks(text: string, maxChunkSize: number): string[] {
   const chunks: string[] = [];
-
-  // Split by double newlines (paragraphs/sections)
   const sections = text.split(/\n\n+/).filter((s) => s.trim().length > 0);
 
   let currentChunk = "";
@@ -190,19 +197,16 @@ function createIntelligentChunks(text: string, maxChunkSize: number): string[] {
   for (const section of sections) {
     const sectionWithBreak = currentChunk ? `\n\n${section}` : section;
 
-    // If adding this section exceeds limit
     if (
       currentChunk &&
       currentChunk.length + sectionWithBreak.length > maxChunkSize
     ) {
-      // Save current chunk
       chunks.push(currentChunk.trim());
       currentChunk = section;
     } else {
       currentChunk += sectionWithBreak;
     }
 
-    // If single section is too large, split by sentences
     if (currentChunk.length > maxChunkSize) {
       const sentenceChunks = splitBySentences(currentChunk, maxChunkSize);
       chunks.push(...sentenceChunks.slice(0, -1));
@@ -210,7 +214,6 @@ function createIntelligentChunks(text: string, maxChunkSize: number): string[] {
     }
   }
 
-  // Add remaining content
   if (currentChunk.trim()) {
     chunks.push(currentChunk.trim());
   }
