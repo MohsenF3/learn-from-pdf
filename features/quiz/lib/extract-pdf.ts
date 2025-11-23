@@ -47,6 +47,13 @@ export const extractPDFText = async (
       };
     }
 
+    // Polyfill DOM APIs for Node.js environment
+    if (typeof global !== 'undefined' && !global.DOMMatrix) {
+      global.DOMMatrix = class DOMMatrix {
+        constructor(public values: any = []) {}
+      } as any;
+    }
+
     // Extract text
     const { PDFParse } = await import("pdf-parse");
     parser = new PDFParse({ data: buffer });
