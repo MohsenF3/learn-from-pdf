@@ -174,7 +174,8 @@ export async function POST(request: NextRequest) {
       
       console.log("pdfjs loaded");
       
-      const pdf = await pdfjs.getDocument({ data: buffer }).promise;
+      const uint8Array = new Uint8Array(buffer);
+      const pdf = await pdfjs.getDocument({ data: uint8Array }).promise;
       console.log("PDF document loaded, pages:", pdf.numPages);
       
       let fullText = "";
