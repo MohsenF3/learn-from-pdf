@@ -16,19 +16,17 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FileText, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { extractPDFData, generateQuizQuestions } from "../../actions";
+import { extractPDFData } from "../../actions";
 import {
   DIFFICULTY_OPTIONS,
   LANGUAGE_OPTIONS,
   QUIZ_CONFIG,
 } from "../../lib/config";
 import { createQuizSchema } from "../../lib/schemas";
-import { CreateQuizSchemaType, SafeQuizQuestion } from "../../lib/types";
-import { useQuizStore } from "../../store/quiz-store";
+import { CreateQuizSchemaType } from "../../lib/types";
 import FileUploadField from "./file-upload-field";
 
 interface CreateQuizFormProps {
@@ -44,9 +42,6 @@ export default function CreateQuizForm({
 }: CreateQuizFormProps) {
   const [status, setStatus] = useState<GenerationStatus>("idle");
   const [isGenerating, startGenerating] = useTransition();
-
-  const router = useRouter();
-  const setSession = useQuizStore((s) => s.setSession);
 
   const form = useForm<CreateQuizSchemaType>({
     resolver: zodResolver(createQuizSchema({ isLoggedIn })),
@@ -77,39 +72,35 @@ export default function CreateQuizForm({
 
       setStatus("generating");
 
-      const dataToGenerate = {
-        numberOfQuestions: data.numberOfQuestions,
-        difficulty: data.difficulty,
-        language: data.language,
-        extractedData: extractResult.data,
-      };
-      const quizResult = await generateQuizQuestions(dataToGenerate);
+      console.log(extractResult.data.fullText);
 
-      if (!quizResult.success) {
-        toast.error(quizResult.error);
-        setStatus("idle");
-        return;
-      }
+      // const quizResult = await generateQuizQuestions(dataToGenerate);
 
-      const { sessionId, questions, pdfName, difficulty } = quizResult.data;
+      // if (!quizResult.success) {
+      //   toast.error(quizResult.error);
+      //   setStatus("idle");
+      //   return;
+      // }
 
-      const quizQuestions = questions.map((q: SafeQuizQuestion) => ({
-        question: q.question,
-        options: q.options,
-        correctAnswer: -1,
-      }));
+      // const { sessionId, questions, pdfName, difficulty } = quizResult.data;
 
-      setSession(
-        sessionId,
-        pdfName,
-        data.difficulty,
-        quizQuestions,
-        data.language
-      );
-      toast.success(`Generated ${questions.length} questions successfully!`);
+      // const quizQuestions = questions.map((q: SafeQuizQuestion) => ({
+      //   question: q.question,
+      //   options: q.options,
+      //   correctAnswer: -1,
+      // }));
+
+      // setSession(
+      //   sessionId,
+      //   pdfName,
+      //   data.difficulty,
+      //   quizQuestions,
+      //   data.language
+      // );
+      // toast.success(`Generated ${questions.length} questions successfully!`);
       setStatus("idle");
 
-      router.push(ROUTES.PUBLIC.QUIZ_TAKE(sessionId));
+      // router.push(ROUTES.PUBLIC.QUIZ_TAKE(sessionId));
     });
   };
 
