@@ -2,9 +2,12 @@
 
 import { getUser } from "@/features/auth/lib/getUser";
 import { ActionResult } from "@/lib/types";
+import { PDFParse } from "pdf-parse";
 import { QUIZ_CONFIG } from "../lib/config";
 import { createQuizSchema } from "../lib/schemas";
 import { PDFExtractionResult } from "../lib/types";
+
+export const runtime = "nodejs";
 
 export const extractPDFData = async (
   file: File
@@ -46,7 +49,6 @@ export const extractPDFText = async (
     const MIN_TEXT_LENGTH = 100;
     const MAX_CONTEXT_LENGTH = 15000;
 
-    const { PDFParse } = await import("pdf-parse");
     let parser: InstanceType<typeof PDFParse> | null = null;
 
     // Validate file type
