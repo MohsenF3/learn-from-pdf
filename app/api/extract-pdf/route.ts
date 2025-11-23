@@ -1,37 +1,16 @@
-// Setup polyfills BEFORE any imports
-if (typeof global !== "undefined") {
-  if (!global.DOMMatrix) {
-    global.DOMMatrix = class DOMMatrix {
-      constructor(public values: any = []) {}
-    } as any;
-  }
-
-  if (!global.DOMPoint) {
-    global.DOMPoint = class DOMPoint {
-      constructor(
-        public x: number = 0,
-        public y: number = 0,
-        public z: number = 0,
-        public w: number = 1
-      ) {}
-    } as any;
-  }
-
-  if (!global.CanvasRenderingContext2D) {
-    global.CanvasRenderingContext2D = class CanvasRenderingContext2D {} as any;
-  }
-}
-
 import { getUser } from "@/features/auth/lib/getUser";
 import { QUIZ_CONFIG } from "@/features/quiz/lib/config";
 import { createQuizSchema } from "@/features/quiz/lib/schemas";
 import { NextRequest, NextResponse } from "next/server";
-import { PDFParse } from "pdf-parse";
+import * as pdfjs from "pdfjs-dist";
 
 export const maxDuration = 60;
 
 const MIN_TEXT_LENGTH = 100;
 const MAX_CONTEXT_LENGTH = 15000;
+
+// Set worker source for pdfjs
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 function cleanTextContent(text: string): string {
   return text
@@ -160,14 +139,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file type
-    if (!file.type.includes("pdf")) {
-      return NextResponse.json(
-        { success: false, error: "File must be a PDF document" },
-        { status: 400 }
-      );
-    }
-
     // Validate file size
     const MAX_FILE_SIZE = QUIZ_CONFIG.FILE.MAX_SIZE;
     if (file.size > MAX_FILE_SIZE) {
@@ -200,20 +171,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract text
-    let parser: any = null;
+    // Extract text using pdfjs
     try {
-      parser = new PDFParse({ data: buffer });
-      const textResult = await parser.getText();
+      const pdf = await pdfjs.getDocument({ data: buffer }).promise;
+      let fullText = "";
 
-      if (!textResult.text?.trim()) {
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str || "")
+          .join(" ");
+        fullText += pageText + "\n";
+      }
+
+      if (!fullText.trim()) {
         return NextResponse.json(
           { success: false, error: "PDF contains no extractable text" },
           { status: 400 }
         );
       }
 
-      if (textResult.text.length < MIN_TEXT_LENGTH) {
+      if (fullText.length < MIN_TEXT_LENGTH) {
         return NextResponse.json(
           { success: false, error: "PDF content is too short" },
           { status: 400 }
@@ -221,9 +200,9 @@ export async function POST(request: NextRequest) {
       }
 
       // Clean and chunk
-      const cleanedText = cleanTextContent(textResult.text);
+      const cleanedText = cleanTextContent(fullText);
       const characterCount = cleanedText.length;
-      const pageCount = textResult.total || 1;
+      const pageCount = pdf.numPages;
 
       const isChunked = characterCount > MAX_CONTEXT_LENGTH;
       const chunks = isChunked
@@ -241,17 +220,19 @@ export async function POST(request: NextRequest) {
           isChunked,
         },
       });
-    } finally {
-      if (parser) {
-        await parser.destroy();
-      }
+    } catch (extractError) {
+      console.error("PDF extraction error:", extractError);
+      return NextResponse.json(
+        { success: false, error: "Failed to extract text from PDF" },
+        { status: 400 }
+      );
     }
   } catch (error) {
-    console.error("PDF extraction API error:", error);
+    console.error("API error:", error);
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to extract PDF. Please try again.",
+        error: "Failed to process PDF. Please try again.",
       },
       { status: 500 }
     );
