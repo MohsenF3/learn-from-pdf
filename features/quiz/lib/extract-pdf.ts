@@ -1,56 +1,19 @@
-"use server";
-
-import { getUser } from "@/features/auth/lib/getUser";
+import "server-only";
 import { ActionResult } from "@/lib/types";
 import { PDFParse } from "pdf-parse";
-import { QUIZ_CONFIG } from "../lib/config";
-import { createQuizSchema } from "../lib/schemas";
-import { PDFExtractionResult } from "../lib/types";
+import { QUIZ_CONFIG } from "./config";
+import { PDFExtractionResult } from "./types";
 
-export const runtime = "nodejs";
-
-export const extractPDFData = async (
-  file: File
-): Promise<ActionResult<PDFExtractionResult>> => {
-  const user = await getUser();
-  const schema = createQuizSchema({ isLoggedIn: !!user });
-
-  const fileSchema = schema.shape.file;
-
-  const parsed = fileSchema.safeParse(file);
-
-  if (!parsed.success) {
-    return {
-      success: false,
-      error: parsed.error.issues[0]?.message ?? "Invalid input data",
-    };
-  }
-
-  const extractedData = await extractPDFText(parsed.data);
-
-  if (!extractedData.success) {
-    return {
-      success: false,
-      error: extractedData.error,
-    };
-  }
-
-  return {
-    success: true,
-    data: extractedData.data,
-  };
-};
+const MAX_FILE_SIZE = QUIZ_CONFIG.FILE.MAX_SIZE;
+const MIN_TEXT_LENGTH = 100;
+const MAX_CONTEXT_LENGTH = 15000;
 
 export const extractPDFText = async (
   file: File
 ): Promise<ActionResult<PDFExtractionResult>> => {
+  let parser: any = null;
+
   try {
-    const MAX_FILE_SIZE = QUIZ_CONFIG.FILE.MAX_SIZE;
-    const MIN_TEXT_LENGTH = 100;
-    const MAX_CONTEXT_LENGTH = 15000;
-
-    let parser: InstanceType<typeof PDFParse> | null = null;
-
     // Validate file type
     if (!file.type.includes("pdf")) {
       return {
@@ -84,6 +47,13 @@ export const extractPDFText = async (
         success: false,
         error: "Invalid PDF file",
       };
+    }
+
+    // Polyfill DOM APIs for Node.js environment
+    if (typeof global !== "undefined" && !global.DOMMatrix) {
+      global.DOMMatrix = class DOMMatrix {
+        constructor(public values: any = []) {}
+      } as any;
     }
 
     // Extract text
@@ -130,24 +100,29 @@ export const extractPDFText = async (
     console.error("PDF extraction error:", error);
 
     if (error instanceof Error) {
-      if (error.message.includes("password")) {
+      if (error.name === "PasswordException") {
         return {
           success: false,
           error: "PDF is password protected",
         };
       }
-      if (error.message.includes("Invalid PDF")) {
+      if (error.name === "InvalidPDFException") {
         return {
           success: false,
           error: "Invalid PDF document",
         };
       }
+      console.error("Error details:", error.message, error.stack);
     }
 
     return {
       success: false,
       error: "Failed to extract text from PDF",
     };
+  } finally {
+    if (parser) {
+      await parser.destroy();
+    }
   }
 };
 
@@ -211,6 +186,8 @@ function cleanTextContent(text: string): string {
   );
 }
 
+// Create intelligent chunks that respect semantic boundaries Prioritizes: headings > paragraphs > sentence boundaries
+
 function createIntelligentChunks(text: string, maxChunkSize: number): string[] {
   const chunks: string[] = [];
 
@@ -250,6 +227,7 @@ function createIntelligentChunks(text: string, maxChunkSize: number): string[] {
   return chunks;
 }
 
+// Split text by sentences when sections are too large
 function splitBySentences(text: string, maxSize: number): string[] {
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
   const chunks: string[] = [];

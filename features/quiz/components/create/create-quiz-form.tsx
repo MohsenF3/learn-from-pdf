@@ -19,7 +19,6 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { extractPDFData } from "../../actions";
 import {
   DIFFICULTY_OPTIONS,
   LANGUAGE_OPTIONS,
@@ -62,45 +61,23 @@ export default function CreateQuizForm({
     setStatus("extracting");
 
     startGenerating(async () => {
-      const extractResult = await extractPDFData(data.file);
+      const formData = new FormData();
+      formData.append("file", data.file);
 
-      if (!extractResult.success) {
-        toast.error(extractResult.error);
+      const response = await fetch("/api/extract-pdf", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        toast.error(result.error || "Failed to extract PDF");
         setStatus("idle");
         return;
       }
 
-      setStatus("generating");
-
-      console.log(extractResult.data.fullText);
-
-      // const quizResult = await generateQuizQuestions(dataToGenerate);
-
-      // if (!quizResult.success) {
-      //   toast.error(quizResult.error);
-      //   setStatus("idle");
-      //   return;
-      // }
-
-      // const { sessionId, questions, pdfName, difficulty } = quizResult.data;
-
-      // const quizQuestions = questions.map((q: SafeQuizQuestion) => ({
-      //   question: q.question,
-      //   options: q.options,
-      //   correctAnswer: -1,
-      // }));
-
-      // setSession(
-      //   sessionId,
-      //   pdfName,
-      //   data.difficulty,
-      //   quizQuestions,
-      //   data.language
-      // );
-      // toast.success(`Generated ${questions.length} questions successfully!`);
-      setStatus("idle");
-
-      // router.push(ROUTES.PUBLIC.QUIZ_TAKE(sessionId));
+      console.log({ result });
     });
   };
 
