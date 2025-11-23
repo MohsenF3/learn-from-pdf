@@ -96,6 +96,8 @@ export const extractPDFText = async (
       },
     };
   } catch (error) {
+    console.error("PDF extraction error:", error);
+    
     if (error instanceof Error) {
       if (error.name === "PasswordException") {
         return {
@@ -109,6 +111,7 @@ export const extractPDFText = async (
           error: "Invalid PDF document",
         };
       }
+      console.error("Error details:", error.message, error.stack);
     }
 
     return {
