@@ -174,6 +174,8 @@ export async function POST(request: NextRequest) {
       
       console.log("pdfjs loaded");
       
+      pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.394/pdf.worker.min.mjs`;
+      
       const uint8Array = new Uint8Array(buffer);
       const pdf = await pdfjs.getDocument({ data: uint8Array }).promise;
       console.log("PDF document loaded, pages:", pdf.numPages);
