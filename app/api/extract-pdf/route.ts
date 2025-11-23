@@ -3,7 +3,6 @@ import { getUser } from "@/features/auth/lib/getUser";
 import { createQuizSchema } from "@/features/quiz/lib/schemas";
 import { QUIZ_CONFIG } from "@/features/quiz/lib/config";
 import { NextRequest, NextResponse } from "next/server";
-import { PDFParse } from "pdf-parse";
 
 export const maxDuration = 60;
 
@@ -169,19 +168,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract text using pdf-parse
+    // Extract text using pdfjs-dist
     try {
-      const parser = new PDFParse({ data: buffer });
-      console.log("PDFParse parser created");
+      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
       
-      const textResult = await parser.getText();
-      console.log("Text extracted, length:", textResult.text.length);
+      console.log("pdfjs loaded");
       
-      const infoResult = await parser.getInfo();
-      console.log("Info extracted, pages:", infoResult.pages.length);
+      const pdf = await pdfjs.getDocument({ data: buffer }).promise;
+      console.log("PDF document loaded, pages:", pdf.numPages);
       
-      const fullText = textResult.text;
-      const pageCount = infoResult.pages.length;
+      let fullText = "";
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items
+          .map((item: any) => item.str || "")
+          .join(" ");
+        fullText += pageText + "\n";
+      }
+      
+      console.log("Text extracted, length:", fullText.length);
+      
+      const pageCount = pdf.numPages;
 
       if (!fullText.trim()) {
         return NextResponse.json(
