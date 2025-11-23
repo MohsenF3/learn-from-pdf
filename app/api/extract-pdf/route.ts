@@ -1,3 +1,4 @@
+import "@/lib/dom-polyfill";
 import { getUser } from "@/features/auth/lib/getUser";
 import { createQuizSchema } from "@/features/quiz/lib/schemas";
 import { QUIZ_CONFIG } from "@/features/quiz/lib/config";
