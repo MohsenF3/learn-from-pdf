@@ -49,13 +49,6 @@ export const extractPDFText = async (
       };
     }
 
-    // Polyfill DOM APIs for Node.js environment
-    if (typeof global !== "undefined" && !global.DOMMatrix) {
-      global.DOMMatrix = class DOMMatrix {
-        constructor(public values: any = []) {}
-      } as any;
-    }
-
     // Extract text
     parser = new PDFParse({ data: buffer });
     const textResult = await parser.getText();
@@ -186,8 +179,6 @@ function cleanTextContent(text: string): string {
   );
 }
 
-// Create intelligent chunks that respect semantic boundaries Prioritizes: headings > paragraphs > sentence boundaries
-
 function createIntelligentChunks(text: string, maxChunkSize: number): string[] {
   const chunks: string[] = [];
 
@@ -227,7 +218,6 @@ function createIntelligentChunks(text: string, maxChunkSize: number): string[] {
   return chunks;
 }
 
-// Split text by sentences when sections are too large
 function splitBySentences(text: string, maxSize: number): string[] {
   const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
   const chunks: string[] = [];

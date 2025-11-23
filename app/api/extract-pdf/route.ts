@@ -5,6 +5,30 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const maxDuration = 60; // Vercel edge function timeout
 
+// Setup polyfills before any pdf-parse imports
+if (typeof global !== "undefined") {
+  if (!global.DOMMatrix) {
+    global.DOMMatrix = class DOMMatrix {
+      constructor(public values: any = []) {}
+    } as any;
+  }
+
+  if (!global.DOMPoint) {
+    global.DOMPoint = class DOMPoint {
+      constructor(
+        public x: number = 0,
+        public y: number = 0,
+        public z: number = 0,
+        public w: number = 1
+      ) {}
+    } as any;
+  }
+
+  if (!global.CanvasRenderingContext2D) {
+    global.CanvasRenderingContext2D = class CanvasRenderingContext2D {} as any;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Get user for schema validation
