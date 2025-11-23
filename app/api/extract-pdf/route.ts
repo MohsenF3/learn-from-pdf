@@ -172,8 +172,14 @@ export async function POST(request: NextRequest) {
     // Extract text using pdf-parse
     try {
       const parser = new PDFParse({ data: buffer });
+      console.log("PDFParse parser created");
+      
       const textResult = await parser.getText();
+      console.log("Text extracted, length:", textResult.text.length);
+      
       const infoResult = await parser.getInfo();
+      console.log("Info extracted, pages:", infoResult.pages.length);
+      
       const fullText = textResult.text;
       const pageCount = infoResult.pages.length;
 
@@ -213,8 +219,10 @@ export async function POST(request: NextRequest) {
       });
     } catch (extractError) {
       console.error("PDF extraction error:", extractError);
+      const errorMessage = extractError instanceof Error ? extractError.message : String(extractError);
+      console.error("Error details:", errorMessage);
       return NextResponse.json(
-        { success: false, error: "Failed to extract text from PDF" },
+        { success: false, error: "Failed to extract text from PDF", details: errorMessage },
         { status: 400 }
       );
     }
