@@ -1,6 +1,6 @@
 import { getUser } from "@/features/auth/lib/getUser";
-import { QUIZ_CONFIG } from "@/features/quiz/lib/config";
 import { createQuizSchema } from "@/features/quiz/lib/schemas";
+import { QUIZ_CONFIG } from "@/features/quiz/lib/config";
 import { NextRequest, NextResponse } from "next/server";
 import * as pdfjs from "pdfjs-dist";
 
@@ -9,8 +9,8 @@ export const maxDuration = 60;
 const MIN_TEXT_LENGTH = 100;
 const MAX_CONTEXT_LENGTH = 15000;
 
-// Set worker source for pdfjs
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+// Set worker source for pdfjs v5.x
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/5.4.394/pdf.worker.min.js`;
 
 function cleanTextContent(text: string): string {
   return text
