@@ -205,7 +205,11 @@ export default function CreateQuizForm({
               orientation="horizontal"
             >
               {LANGUAGE_OPTIONS.map((opt) => (
-                <SelectItem key={opt.value} value={opt.value}>
+                <SelectItem
+                  key={opt.value}
+                  value={opt.value}
+                  disabled={isGenerating}
+                >
                   {opt.label}
                 </SelectItem>
               ))}
