@@ -96,6 +96,7 @@ export default function FileUploadField({
                 size="sm"
                 onClick={() => onChange(null)}
                 aria-label="Remove file"
+                disabled={isGenerating}
               >
                 <XIcon className="mr-2 h-4 w-4" />
                 Remove

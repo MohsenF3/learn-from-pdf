@@ -1,6 +1,6 @@
-import "server-only";
-import pdf from "pdf-parse";
 import { ActionResult } from "@/lib/types";
+import pdf from "pdf-parse";
+import "server-only";
 import { QUIZ_CONFIG } from "./config";
 import { PDFExtractionResult } from "./types";
 
@@ -78,7 +78,6 @@ export const extractPDFText = async (
       },
     };
   } catch (error) {
-    console.error("PDF extraction error:", error);
     if (error instanceof Error) {
       if (error.message.includes("password")) {
         return {
@@ -92,7 +91,6 @@ export const extractPDFText = async (
           error: "Invalid PDF document",
         };
       }
-      console.error("Error details:", error.message, error.stack);
     }
     return {
       success: false,
