@@ -2,6 +2,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { LayoutWrapper } from "@/features/shared/components/layout-wrapper";
 import { Providers } from "@/features/shared/providers";
 import { cormorant, firaSansCondensed, geistMono } from "@/lib/fonts";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -29,6 +30,8 @@ export default function RootLayout({
 
           <Toaster richColors />
         </Providers>
+
+        <SpeedInsights />
       </body>
     </html>
   );

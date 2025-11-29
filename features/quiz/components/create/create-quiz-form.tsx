@@ -19,6 +19,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { extractPDFData } from "../../actions";
 import {
   DIFFICULTY_OPTIONS,
   LANGUAGE_OPTIONS,
@@ -61,23 +62,17 @@ export default function CreateQuizForm({
     setStatus("extracting");
 
     startGenerating(async () => {
-      const formData = new FormData();
-      formData.append("file", data.file);
+      const extractResult = await extractPDFData(data.file);
 
-      const response = await fetch("/api/extract-pdf", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        toast.error(result.error || "Failed to extract PDF");
+      if (!extractResult.success) {
+        toast.error(extractResult.error);
         setStatus("idle");
         return;
       }
 
-      console.log({ result });
+      console.log(extractResult.data);
+
+      setStatus("idle");
     });
   };
 
