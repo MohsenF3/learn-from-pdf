@@ -1,5 +1,58 @@
 import { QuizQuestion } from "./types";
 
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+export function getRandomQuestions(count: number): QuizQuestion[] {
+  const shuffled = shuffleArray(QUESTION_BANK);
+  return shuffled.slice(0, Math.min(count, QUESTION_BANK.length));
+}
+
+export const QUIZ_CONFIG = {
+  FILE: {
+    MAX_SIZE: 5 * 1024 * 1024,
+    ACCEPTED_TYPES: ["application/pdf"] as const,
+    ACCEPTED_EXTENSIONS: [".pdf"] as const,
+  },
+  QUESTIONS: {
+    MIN: 1,
+    MAX: 15,
+    DEFAULT: 5,
+
+    FREE_USER_DAILY: 3,
+    LOGGED_IN_DAILY: 10,
+    MAX_QUESTIONS_FREE: 5,
+    MAX_QUESTIONS_LOGGED_IN: 15,
+  },
+  DIFFICULTIES: ["simple", "medium", "hard"] as const,
+  LANGUAGES: [
+    "English",
+    "Français",
+    "Español",
+    "Deutsch",
+    "Italiano",
+    "Русский",
+    "中文",
+    "فارسی",
+  ] as const,
+} as const;
+
+export const DIFFICULTY_OPTIONS = QUIZ_CONFIG.DIFFICULTIES.map((value) => ({
+  value,
+  label: value.charAt(0).toUpperCase() + value.slice(1),
+}));
+
+export const LANGUAGE_OPTIONS = QUIZ_CONFIG.LANGUAGES.map((value) => ({
+  value,
+  label: value.charAt(0).toUpperCase() + value.slice(1),
+}));
+
 const QUESTION_BANK: QuizQuestion[] = [
   // Geography
   {
@@ -146,56 +199,3 @@ const QUESTION_BANK: QuizQuestion[] = [
     correctAnswer: 1,
   },
 ];
-
-function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-export function getRandomQuestions(count: number): QuizQuestion[] {
-  const shuffled = shuffleArray(QUESTION_BANK);
-  return shuffled.slice(0, Math.min(count, QUESTION_BANK.length));
-}
-
-export const QUIZ_CONFIG = {
-  FILE: {
-    MAX_SIZE: 5 * 1024 * 1024,
-    ACCEPTED_TYPES: ["application/pdf"] as const,
-    ACCEPTED_EXTENSIONS: [".pdf"] as const,
-  },
-  QUESTIONS: {
-    MIN: 1,
-    MAX: 15,
-    DEFAULT: 5,
-
-    FREE_USER_DAILY: 3,
-    LOGGED_IN_DAILY: 10,
-    MAX_QUESTIONS_FREE: 5,
-    MAX_QUESTIONS_LOGGED_IN: 15,
-  },
-  DIFFICULTIES: ["simple", "medium", "hard"] as const,
-  LANGUAGES: [
-    "English",
-    "Français",
-    "Español",
-    "Deutsch",
-    "Italiano",
-    "Русский",
-    "中文",
-    "فارسی",
-  ] as const,
-} as const;
-
-export const DIFFICULTY_OPTIONS = QUIZ_CONFIG.DIFFICULTIES.map((value) => ({
-  value,
-  label: value.charAt(0).toUpperCase() + value.slice(1),
-}));
-
-export const LANGUAGE_OPTIONS = QUIZ_CONFIG.LANGUAGES.map((value) => ({
-  value,
-  label: value.charAt(0).toUpperCase() + value.slice(1),
-}));

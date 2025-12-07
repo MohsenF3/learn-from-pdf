@@ -1,5 +1,6 @@
 import { getUser } from "@/features/auth/lib/getUser";
 import EmptyHistory from "@/features/history/components/empty-history";
+import HistoryCharts from "@/features/history/components/history-charts";
 import HistoryItems from "@/features/history/components/history-items";
 import HistoryStats from "@/features/history/components/history-stats";
 import { getUserQuizHistory } from "@/features/history/lib/queries";
@@ -42,13 +43,18 @@ export default async function HistoryPage() {
         </p>
       </div>
 
-      <HistoryStats history={history.data} />
+      <div className="space-y-8">
+        <HistoryStats history={history.data} />
 
-      {history.data.length === 0 ? (
-        <EmptyHistory />
-      ) : (
-        <HistoryItems histories={history.data} />
-      )}
+        {history.data.length === 0 ? (
+          <EmptyHistory />
+        ) : (
+          <>
+            <HistoryCharts histories={history.data} />
+            <HistoryItems histories={history.data} />
+          </>
+        )}
+      </div>
     </div>
   );
 }

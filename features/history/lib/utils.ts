@@ -1,9 +1,11 @@
+// features/history/lib/utils.ts
 import { QuizDifficulty } from "@/features/quiz/lib/types";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 import { QuizHistoryDB } from "./types";
 
-// Get average score % from quiz history
-// calculateAverageScore([{ score: 8, total_questions: 10 }]) => 80
+// STATISTICS & CALCULATIONS
+
 export function calculateAverageScore(histories: QuizHistoryDB[]): number {
   if (histories.length === 0) return 0;
   const totalPercentage = histories.reduce(
@@ -13,18 +15,61 @@ export function calculateAverageScore(histories: QuizHistoryDB[]): number {
   return totalPercentage / histories.length;
 }
 
-// Find highest score % across all attempts
-// calculateBestScore([{ score: 7, total: 10 }, { score: 9, total: 10 }]) => 90
 export function calculateBestScore(histories: QuizHistoryDB[]): number {
   if (histories.length === 0) return 0;
   return Math.max(...histories.map((q) => (q.score / q.total_questions) * 100));
 }
 
-// Round percentage to decimal places
-// formatPercentage(85.678, 1) => "85.7"
 export function formatPercentage(value: number, decimals = 1): string {
   return value.toFixed(decimals);
 }
+
+// CHART DATA TRANSFORMATIONS
+
+export const DIFFICULTY_COLORS = {
+  simple: "var(--color-chart-success)",
+  medium: "var(--color-chart-warning)",
+  hard: "var(--color-chart-danger)",
+} as const;
+
+export function getScoreOverTimeData(histories: QuizHistoryDB[]) {
+  return histories
+    .sort(
+      (a, b) =>
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    )
+    .map((h) => ({
+      date: format(new Date(h.created_at), "MMM dd"),
+      scorePercentage:
+        h.total_questions > 0
+          ? Math.round((h.score / h.total_questions) * 100)
+          : 0,
+    }));
+}
+
+export function getAvgScoreByDifficulty(histories: QuizHistoryDB[]) {
+  const map = histories.reduce((acc, h) => {
+    const key = h.difficulty.toLowerCase();
+    if (!acc[key]) acc[key] = { score: 0, total: 0 };
+    acc[key].score += h.score;
+    acc[key].total += h.total_questions;
+    return acc;
+  }, {} as Record<string, { score: number; total: number }>);
+
+  const order = ["simple", "medium", "hard"];
+  return order
+    .filter((d) => map[d])
+    .map((difficulty) => ({
+      difficulty: difficulty.charAt(0).toUpperCase() + difficulty.slice(1),
+      averagePercentage:
+        map[difficulty].total > 0
+          ? Math.round((map[difficulty].score / map[difficulty].total) * 100)
+          : 0,
+      fill: DIFFICULTY_COLORS[difficulty as keyof typeof DIFFICULTY_COLORS],
+    }));
+}
+
+// UI HELPERS
 
 export const getDifficultyVariant = (difficulty: QuizDifficulty) => {
   switch (difficulty) {
@@ -65,8 +110,8 @@ export const getOptionClasses = (
   );
 };
 
-// Format date to readable string
-// formatDateTime("2025-10-30T10:30:00Z") => "October 30, 2025, 10:30 AM"
+// DATE FORMATTING
+
 export const formatDateTime = (dateString: string): string => {
   return new Date(dateString).toLocaleDateString("en-US", {
     year: "numeric",
