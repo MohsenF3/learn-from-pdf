@@ -2,13 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldContent,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
@@ -19,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { MailIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { login } from "../lib/actions";
 import { loginSchema } from "../lib/schemas";
@@ -53,35 +51,35 @@ export default function LoginForm() {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSendCode)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email address</FormLabel>
-              <FormControl>
-                <InputGroup>
-                  <InputGroupInput
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    {...field}
-                  />
-                  <InputGroupAddon>
-                    <MailIcon />
-                  </InputGroupAddon>
-                </InputGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" className="w-full" size="lg" disabled={isPending}>
-          Send verification code
-        </Button>
-      </form>
-    </Form>
+    <form onSubmit={form.handleSubmit(handleSendCode)} className="space-y-8">
+      <Controller
+        control={form.control}
+        name="email"
+        render={({ field, fieldState }) => (
+          <Field data-invalid={fieldState.invalid}>
+            <FieldContent>
+              <FieldLabel htmlFor={field.name}>Email address</FieldLabel>
+              <InputGroup>
+                <InputGroupInput
+                  {...field}
+                  id={field.name}
+                  type="email"
+                  placeholder="you@example.com"
+                  aria-invalid={fieldState.invalid}
+                />
+                <InputGroupAddon>
+                  <MailIcon />
+                </InputGroupAddon>
+              </InputGroup>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </FieldContent>
+          </Field>
+        )}
+      />
+
+      <Button type="submit" className="w-full" size="lg" disabled={isPending}>
+        Send verification code
+      </Button>
+    </form>
   );
 }
