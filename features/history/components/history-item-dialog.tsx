@@ -2,13 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  ResponsiveModal,
+  ResponsiveModalContent,
+  ResponsiveModalDescription,
+  ResponsiveModalHeader,
+  ResponsiveModalTitle,
+  ResponsiveModalTrigger,
+} from "@/components/ui/responsive-modal";
 import { QuizHistoryDB } from "@/features/history/lib/types";
 import { formatDateTime } from "@/features/history/lib/utils";
 import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
@@ -38,30 +38,30 @@ export default function HistoryItemDialog({ quiz }: HistoryItemDialogProps) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+    <ResponsiveModal open={isOpen} onOpenChange={setIsOpen}>
+      <ResponsiveModalTrigger asChild>
         <div>
           <HistoryItemCard quiz={quiz} />
         </div>
-      </DialogTrigger>
+      </ResponsiveModalTrigger>
 
-      <DialogContent
-        className="sm:max-w-5xl flex flex-col p-0 gap-0"
+      <ResponsiveModalContent
+        className="sm:max-w-5xl flex flex-col p-0 gap-0 max-h-[90vh]"
         onKeyDown={handleKeyDown}
       >
         <div className="border-b px-4 py-4 md:px-6">
-          <DialogHeader className="text-left">
-            <DialogTitle className="flex items-center gap-2 text-xl md:text-2xl">
+          <ResponsiveModalHeader className="text-left">
+            <ResponsiveModalTitle className="flex items-center gap-2 text-xl md:text-2xl">
               <FileText className="h-5 w-5 text-primary shrink-0" />
               Quiz Review
-            </DialogTitle>
-            <DialogDescription className="mt-2 space-y-1">
+            </ResponsiveModalTitle>
+            <ResponsiveModalDescription className="mt-2 space-y-1">
               <span className="block font-medium text-foreground truncate">
                 {quiz.quiz_data.config.pdfFileName}
               </span>
               <span className="block">{formatDateTime(quiz.created_at)}</span>
-            </DialogDescription>
-          </DialogHeader>
+            </ResponsiveModalDescription>
+          </ResponsiveModalHeader>
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-6 md:px-6">
@@ -98,7 +98,7 @@ export default function HistoryItemDialog({ quiz }: HistoryItemDialogProps) {
             <span className="font-medium">Navigate questions</span>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </ResponsiveModalContent>
+    </ResponsiveModal>
   );
 }
