@@ -33,7 +33,7 @@ export default async function VerifyPage(props: {
   const { email } = result.data;
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6">
+    <div className="flex min-h-svh w-full items-center justify-center px-4 py-6">
       <div className="w-full max-w-xl">
         <div className="mb-8 text-center">
           <Logo

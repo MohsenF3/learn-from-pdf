@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex w-full min-h-svh items-center justify-center p-6 md:p-10 ">
+    <div className="flex w-full min-h-svh items-center justify-center px-4 py-6 md:py-10 ">
       <div className="w-full max-w-xl">
         <LoginHeader />
 
