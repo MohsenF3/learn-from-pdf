@@ -77,7 +77,7 @@ export function parseAndValidateQuizResponse(
   }
 }
 
-const HF_MODEL = huggingface("Qwen/Qwen2.5-7B-Instruct");
+const HF_MODEL = huggingface("meta-llama/Llama-3.3-70B-Instruct");
 
 function getDifficultyGuide(difficulty: QuizDifficulty): string {
   const guides: Record<string, string> = {

@@ -5,6 +5,7 @@ import { SupabaseService } from "@/lib/supabase/database.types";
 import { createClientFromServer } from "@/lib/supabase/server";
 import { ActionResult } from "@/lib/types";
 import { User } from "@supabase/supabase-js";
+import { revalidatePath } from "next/cache";
 import { QUIZ_CONFIG } from "../lib/config";
 import {
   generateQuestionsFromMultipleChunks,
@@ -55,7 +56,7 @@ export const generateQuizQuestions = async ({
     return questionsResult;
   }
 
-  return await createQuizSession(
+  const result = await createQuizSession(
     supabase,
     user,
     questionsResult.data,
@@ -63,6 +64,13 @@ export const generateQuizQuestions = async ({
     difficulty as QuizDifficulty,
     language
   );
+
+  // REVALIDATE THE CACHE AFTER SUCCESSFUL CREATION
+  if (result.success) {
+    revalidatePath("/quiz/create");
+  }
+
+  return result;
 };
 
 const validateQuestionLimit = (
