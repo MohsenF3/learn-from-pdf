@@ -60,7 +60,9 @@ export default function VerifyOTPForm({ email }: VerifyOTPFormProps) {
         name="code"
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid} className="text-center">
-            <FieldLabel htmlFor={field.name}>Verification Code</FieldLabel>
+            <FieldLabel htmlFor={field.name} className="justify-center">
+              Verification Code
+            </FieldLabel>
             <InputOTP
               {...field}
               id={field.name}
