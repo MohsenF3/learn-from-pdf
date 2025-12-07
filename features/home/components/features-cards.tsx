@@ -20,8 +20,8 @@ export function FeaturesCards() {
             </div>
             <CardTitle className="text-xl">Easy Upload</CardTitle>
             <CardDescription className="text-base">
-              Simply drag and drop your PDF or click to browse. We support
-              documents up to 5MB with instant processing.
+              Simply drag and drop your PDF. We handle files up to 5MB with
+              instant processing, keeping your original formatting intact.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -31,10 +31,10 @@ export function FeaturesCards() {
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-linear-to-br from-primary/20 to-primary/5 transition-transform group-hover:scale-110">
               <Brain className="h-7 w-7 text-primary" />
             </div>
-            <CardTitle className="text-xl">AI-Powered</CardTitle>
+            <CardTitle className="text-xl">Multi-Language AI</CardTitle>
             <CardDescription className="text-base">
-              Advanced AI analyzes your document content and generates relevant,
-              contextual multiple-choice questions automatically.
+              Our AI speaks your language. Generate questions in English,
+              Spanish, French, German, Italian, Russian, Chinese, or Farsi.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -44,10 +44,11 @@ export function FeaturesCards() {
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-linear-to-br from-primary/20 to-primary/5 transition-transform group-hover:scale-110">
               <Zap className="h-7 w-7 text-primary" />
             </div>
-            <CardTitle className="text-xl">Fully Customizable</CardTitle>
+            <CardTitle className="text-xl">Smart Customization</CardTitle>
             <CardDescription className="text-base">
-              Choose the number of questions (up to 10) and difficulty level
-              (simple, medium, hard) that matches your learning needs.
+              Select your difficulty (Simple to Hard). Free users get 5
+              questions per quiz, while signed-in users unlock up to 15
+              questions.
             </CardDescription>
           </CardHeader>
         </Card>

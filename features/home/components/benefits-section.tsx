@@ -1,4 +1,4 @@
-import { Award, CheckCircle, Clock, TrendingUp } from "lucide-react";
+import { Award, BarChart3, CheckCircle, Clock } from "lucide-react";
 
 export function BenefitsSection() {
   return (
@@ -13,26 +13,26 @@ export function BenefitsSection() {
           </div>
           <div>
             <h4 className="mb-2 font-semibold text-foreground">
-              Instant Feedback
+              Deep Understanding
             </h4>
             <p className="text-sm text-muted-foreground">
-              Get immediate results with detailed explanations for each question
-              to enhance your learning experience.
+              Don't just guess. Get immediate results with detailed explanations
+              for every right (and wrong) answer to reinforce learning.
             </p>
           </div>
         </div>
 
         <div className="flex gap-4 rounded-lg border border-border/50 bg-card/50 p-6 backdrop-blur-sm">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-            <TrendingUp className="h-5 w-5 text-primary" />
+            <BarChart3 className="h-5 w-5 text-primary" />
           </div>
           <div>
             <h4 className="mb-2 font-semibold text-foreground">
-              Track Progress
+              Visual Analytics
             </h4>
             <p className="text-sm text-muted-foreground">
-              Monitor your performance with detailed score breakdowns and see
-              which areas need more focus.
+              Go beyond simple scores. Sign in to access interactive charts that
+              visualize your learning curve and daily progress.
             </p>
           </div>
         </div>
@@ -42,10 +42,12 @@ export function BenefitsSection() {
             <Clock className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h4 className="mb-2 font-semibold text-foreground">Save Time</h4>
+            <h4 className="mb-2 font-semibold text-foreground">
+              Seconds, Not Hours
+            </h4>
             <p className="text-sm text-muted-foreground">
-              No need to manually create questions. Our AI does the heavy
-              lifting in seconds, not hours.
+              Stop manually writing flashcards. Our AI processes your PDF and
+              generates a complete quiz in under 30 seconds.
             </p>
           </div>
         </div>
@@ -56,11 +58,11 @@ export function BenefitsSection() {
           </div>
           <div>
             <h4 className="mb-2 font-semibold text-foreground">
-              Celebrate Success
+              Gamified Learning
             </h4>
             <p className="text-sm text-muted-foreground">
-              Earn achievements and see confetti animations when you ace your
-              quizzes. Learning should be fun!
+              Stay motivated with difficulty tiers. Master the 'Simple' level
+              before challenging yourself with 'Hard' questions.
             </p>
           </div>
         </div>

@@ -155,5 +155,5 @@ input[type="number"] {
 }
 
 @utility gradient-text {
-  @apply bg-linear-to-r from-primary to-accent bg-clip-text text-transparent;
+  @apply bg-linear-to-br from-primary to-primary/40 bg-clip-text text-transparent;
 }
