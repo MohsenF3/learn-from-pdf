@@ -47,12 +47,12 @@ export default async function VerifyPage(props: {
         <Card className="border-2 shadow-xl">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Enter verification code</CardTitle>
-            <CardDescription className="flex items-center justify-center gap-2 mt-2">
-              <Mail className="h-4 w-4" />
-              <span>
-                We sent a 6-digit code to{" "}
-                <strong className="text-foreground">{email}</strong>
-              </span>
+            <CardDescription className="mt-2">
+              <div className="flex items-center justify-center gap-2">
+                <Mail className="h-4 w-4" />
+                <span>We sent a 6-digit code to</span>
+              </div>
+              <strong className="text-foreground">{email}</strong>
             </CardDescription>
           </CardHeader>
           <CardContent>
