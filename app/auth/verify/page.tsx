@@ -9,7 +9,6 @@ import ResendOTPCodeButton from "@/features/auth/components/resend-otp-code-butt
 import VerifyOTPCodeForm from "@/features/auth/components/verify-otp-code-form";
 import { loginSchema } from "@/features/auth/lib/schemas";
 import Fun404 from "@/features/shared/components/fun-404";
-import { Logo } from "@/features/shared/components/logo";
 import { Mail } from "lucide-react";
 import { Metadata } from "next";
 
@@ -35,15 +34,6 @@ export default async function VerifyPage(props: {
   return (
     <div className="flex min-h-svh w-full items-center justify-center px-4 py-6">
       <div className="w-full max-w-xl">
-        <div className="mb-8 text-center">
-          <Logo
-            titleClassName="text-4xl"
-            iconClassName="rounded-full"
-            linkClassName=" justify-center"
-          />
-          <p className="text-muted-foreground mt-2">Almost there!</p>
-        </div>
-
         <Card className="border-2 shadow-xl">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">Enter verification code</CardTitle>

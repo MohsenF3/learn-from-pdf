@@ -46,31 +46,28 @@ export default function HistoryItemDialog({ quiz }: HistoryItemDialogProps) {
       </ResponsiveModalTrigger>
 
       <ResponsiveModalContent
-        className="sm:max-w-5xl flex flex-col p-0 gap-0 max-h-[90vh]"
+        className="sm:max-w-4xl flex flex-col p-0 gap-0 max-h-[95dvh]"
         onKeyDown={handleKeyDown}
       >
-        <div className="border-b px-4 py-4 md:px-6">
-          <ResponsiveModalHeader className="text-left">
-            <ResponsiveModalTitle className="flex items-center gap-2 text-xl md:text-2xl">
-              <FileText className="h-5 w-5 text-primary shrink-0" />
-              Quiz Review
-            </ResponsiveModalTitle>
-            <ResponsiveModalDescription className="mt-2 space-y-1">
-              <span className="block font-medium text-foreground truncate">
-                {quiz.quiz_data.config.pdfFileName}
-              </span>
-              <span className="block">{formatDateTime(quiz.created_at)}</span>
-            </ResponsiveModalDescription>
-          </ResponsiveModalHeader>
-        </div>
+        <ResponsiveModalHeader className="text-left p-4">
+          <ResponsiveModalTitle className="flex items-center gap-2 text-xl md:text-2xl">
+            <FileText className="h-5 w-5 text-primary shrink-0" />
+            Quiz Review
+          </ResponsiveModalTitle>
+          <ResponsiveModalDescription className="mt-2 space-y-1">
+            <span className="block font-medium text-foreground truncate">
+              {quiz.quiz_data.config.pdfFileName}
+            </span>
+            <span className="block">{formatDateTime(quiz.created_at)}</span>
+          </ResponsiveModalDescription>
+        </ResponsiveModalHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 py-6 md:px-6">
+        <div className="flex-1 overflow-y-auto p-4">
           <QuestionReviewCard
             question={quiz.quiz_data.questions[currentIndex]}
             questionIndex={currentIndex}
             totalQuestions={totalQuestions}
           />
-
           <nav className="flex gap-3 pt-4" aria-label="Question navigation">
             <Button
               onClick={handlePrevious}
@@ -87,7 +84,6 @@ export default function HistoryItemDialog({ quiz }: HistoryItemDialogProps) {
               <ChevronRight className="h-4 w-4 sm:ml-2" />
             </Button>
           </nav>
-
           <div className="hidden sm:flex items-center justify-center gap-2 text-xs text-muted-foreground mt-6">
             <kbd className="px-2 py-1 h-6 min-w-6 bg-muted border rounded font-mono font-semibold shadow-sm">
               ←

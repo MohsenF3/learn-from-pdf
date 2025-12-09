@@ -31,7 +31,7 @@ export default function QuestionReviewCard({
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <CardTitle className="text-xl leading-relaxed">
+            <CardTitle className="sm:text-xl leading-relaxed">
               {question.question}
             </CardTitle>
             <CardDescription className="mt-2">
