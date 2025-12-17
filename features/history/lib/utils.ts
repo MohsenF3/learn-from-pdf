@@ -33,7 +33,7 @@ export const DIFFICULTY_COLORS = {
 } as const;
 
 export function getScoreOverTimeData(histories: QuizHistoryDB[]) {
-  return histories
+  return [...histories]
     .sort(
       (a, b) =>
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -46,7 +46,6 @@ export function getScoreOverTimeData(histories: QuizHistoryDB[]) {
           : 0,
     }));
 }
-
 export function getAvgScoreByDifficulty(histories: QuizHistoryDB[]) {
   const map = histories.reduce((acc, h) => {
     const key = h.difficulty.toLowerCase();
